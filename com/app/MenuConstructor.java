@@ -1,7 +1,5 @@
 package com.app;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,7 +15,7 @@ public class MenuConstructor {
      * @param inputButtonList list of the buttons
      * @param tag a tag for special some special action
      */
-    public MenuConstructor(@NotNull JPanel panel, @NotNull JButton menuButton, @NotNull ArrayList<JButton> inputButtonList, String tag) {
+    public MenuConstructor(JPanel panel, JButton menuButton, ArrayList<JButton> inputButtonList, String tag) {
         for (int i = 0; i < inputButtonList.size(); i++) {
             JButton curButton = inputButtonList.get(i);
             Rectangle bounds = menuButton.getBounds();

@@ -21,7 +21,7 @@ public class MainFunction{
     private static MenuConstructor algorithmsMenu;
     private static String currentAlgorithm = "breadth";
 
-    public static void main(String args[]){
+    public static void main(String[] args){
         frame = new JFrame("Pathfinding");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(Settings.WINDOW_WID, Settings.WINDOW_HEI);

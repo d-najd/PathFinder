@@ -1,7 +1,5 @@
 package com.app.Animations;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
