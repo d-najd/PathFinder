@@ -75,7 +75,7 @@ public class Piece {
                 return new Color(0,128,0);
             case Checked:
                 return Color.blue;
-            case Queue:
+            case InQueue:
                 return new Color(0, 0, 128);
             case DisplayingPath:
                 return Color.yellow;
@@ -92,7 +92,7 @@ public class Piece {
         Start,
         End,
         Checked,
-        Queue,
+        InQueue,
         DisplayingPath,
 
         /*
