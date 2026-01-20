@@ -54,36 +54,15 @@ public class Piece {
     }
 
     private static Color getColor(Type type){
-        /** type used for differentiating the type of the current cell
-         *             type 0: empty cell (default value), white
-         *             type 1: wall, darkGray
-         *             type 2: start, red
-         *             type 3: end, darkGreen
-         *             type 4: already checked, lightBlue
-         *             type 5: in queue for checking, darkBlue
-         *             type 6: for displaying shortest path, yellow
-         */
-
-        switch (type) {
-            case Empty:
-                return Color.white;
-            case Wall:
-                return new Color(64, 64, 64);
-            case Start:
-                return Color.red;
-            case End:
-                return new Color(0,128,0);
-            case Checked:
-                return Color.blue;
-            case InQueue:
-                return new Color(0, 0, 128);
-            case DisplayingPath:
-                return Color.yellow;
-            default:
-                System.out.println("[ERROR] the current type of cell " + type + " is not defined in code");
-                break;
-        }
-        return Color.magenta;
+        return switch (type) {
+            case Empty -> Color.white;
+            case Wall -> new Color(64, 64, 64);
+            case Start -> Color.red;
+            case End -> new Color(0, 128, 0);
+            case Checked -> Color.blue;
+            case InQueue -> new Color(0, 0, 128);
+            case DisplayingPath -> Color.yellow;
+        };
     }
 
     public enum Type {
@@ -94,17 +73,5 @@ public class Piece {
         Checked,
         InQueue,
         DisplayingPath,
-
-        /*
-         *             type 0: empty cell (default value), white
-         *             type 1: wall, darkGray
-         *             type 2: start, red
-         *             type 3: end, darkGreen
-         *             type 4: already checked, lightBlue
-         *             type 5: in queue for checking, darkBlue
-         *             type 6: for displaying shortest path, yellow
-         */
     }
-
-    //TODO add the different types here and a function that returns the color of each and something else if needed
 }
