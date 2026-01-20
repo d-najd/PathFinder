@@ -44,12 +44,12 @@ public class BreadthFirst{
                     //Checked if x and y are correct. ALL IN 1 GO
                     int xc = curX + dx[i];//Setting current x coordinate
                     int yc = curY + dy[i];//Setting current y coordinate
-                    int type = grid.get(xc).get(yc).getType();//type of current field
+                    var type = grid.get(xc).get(yc).getType();//type of current field
 
 
-                    if (type == 0)//Movable. Can't return here again so setting it to 'Blocked' now
+                    if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
                     {
-                        grid.get(xc).get(yc).setType(4);//now BLOCKED
+                        grid.get(xc).get(yc).setType(Piece.Type.Checked);//now BLOCKED
                         QueuePiece temp = new QueuePiece(xc, yc);
                         temp.addParent(new ArrayList<>(previous), temp);
                         q.add(temp);//Adding current coordinates to the queue
@@ -59,7 +59,7 @@ public class BreadthFirst{
                         gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
-                    } else if (type == 3) { //Destination found
+                    } else if (type == Piece.Type.End) { //Destination found
                         gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
                         gridObj.visualize_speed = 0;
                         return;

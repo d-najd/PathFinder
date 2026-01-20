@@ -81,7 +81,7 @@ public class DrawGrid extends JPanel {
         //it seems I took startPiece out of here accidentally
 
         endPiece = gridPieces.get(xAxisPieces - 1).get(yAxisPieces - 1);
-        endPiece.setType(3);
+        endPiece.setType(Piece.Type.End);
         tempRect = endPiece.getRect();
         g2d.setColor(endPiece.getColor());
         g2d.fill(tempRect);
@@ -92,16 +92,16 @@ public class DrawGrid extends JPanel {
     private void drawStartPositions(Graphics g) {
         //initial setup
         startPiece = gridPieces.get(0).get(0);
-        startPiece.setType(2);
+        startPiece.setType(Piece.Type.Start);
         endPiece = gridPieces.get(xAxisPieces - 1).get(yAxisPieces - 1);
-        //endPiece.setType(3);
+        //endPiece.setType(Piece.Type.End);
         JPanel startPPanel = new JPanel();
         JPanel endPPanel = new JPanel();
         add(endPPanel);
         add(startPPanel);
         endPPanel.setBackground(Color.orange);
         startPPanel.setBackground(startPiece.getColor());
-        endPiece.setStartType(0);
+        endPiece.setStartType(Piece.Type.Empty);
 
         Rectangle from = AnimatorHelper.calculateCenter(endPiece);
         Rectangle to = AnimatorHelper.calculateEndPos(endPiece);
@@ -132,12 +132,12 @@ public class DrawGrid extends JPanel {
         for (int x = 0; x < xAxisPieces; x++) {
             ArrayList<Piece> tempArr = new ArrayList<>();
             for (int y = 0; y < yAxisPieces; y++) {
-                Rectangle2D rect = new Rectangle2D.Double(x * rectX, y * rectY, rectWid, rectHei);
+                var newPiece = new Piece(x, y);
                 g2d.setColor(Color.WHITE);
-                g2d.fill(rect);
+                g2d.fill(newPiece.getRect());
                 g2d.setColor(Color.black);
-                g2d.draw(rect);
-                tempArr.add(new Piece(rect, x, y));
+                g2d.draw(newPiece.getRect());
+                tempArr.add(newPiece);
             }
             gridPieces.add(tempArr);
         }
@@ -159,7 +159,7 @@ public class DrawGrid extends JPanel {
         for (int i = 1; i < path.size(); i++){
             QueuePiece curPiece = path.get(i);
 
-            gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(6);//display shortest path type
+            gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display shortest path type
             pieceForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
             paintImmediately(curPiece.getX() * rectWid, curPiece.getY() * rectHei, rectWid,
                     rectHei);
@@ -176,8 +176,8 @@ public class DrawGrid extends JPanel {
 
         for (ArrayList<Piece> colPieceArr : gridPieces){
             for (Piece curPiece : colPieceArr)
-                if (curPiece.getType() == 4 || curPiece.getType() == 6 || curPiece.getType() == 1)
-                    curPiece.setType(0);
+                if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath || curPiece.getType() == Piece.Type.Wall)
+                    curPiece.setType(Piece.Type.Empty);
             pieceForRepainting.addAll(colPieceArr);
         }
         paintImmediately(0, 0, Settings.GRID_WID * rectWid,
@@ -190,8 +190,8 @@ public class DrawGrid extends JPanel {
 
         for (ArrayList<Piece> colPieceArr : gridPieces){
             for (Piece curPiece : colPieceArr)
-                if (curPiece.getType() == 4 || curPiece.getType() == 6)
-                    curPiece.setType(0);
+                if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
+                    curPiece.setType(Piece.Type.Empty);
             pieceForRepainting.addAll(colPieceArr);
         }
         paintImmediately(0, 0, Settings.GRID_WID * rectWid,
@@ -256,12 +256,12 @@ public class DrawGrid extends JPanel {
             if (PressedPiece(e.getX(), e.getY()) == lastPressed)
                 return;
 
-            if (pressed.getType() == 0) {
+            if (pressed.getType() == Piece.Type.Empty) {
                 IfPieceEmpty(pressed);
-            } else if (pressed.getType() == 1) {
-                pressed.setType(0);
+            } else if (pressed.getType() == Piece.Type.Wall) {
+                pressed.setType(Piece.Type.Empty);
                 wasPreviousPieceUnique = null;
-            } else if ((pressed.getType() == 2 || pressed.getType() == 3) && wasPreviousPieceUnique == null && !mouseHeld){
+            } else if ((pressed.getType() == Piece.Type.Start || pressed.getType() == Piece.Type.End) && wasPreviousPieceUnique == null && !mouseHeld){
                 wasPreviousPieceUnique = pressed;
                 return;
             }
@@ -274,13 +274,13 @@ public class DrawGrid extends JPanel {
         //if the piece is empty and is being pressed do the following function
         private void IfPieceEmpty(Piece pressed) {
             if (wasPreviousPieceUnique == null) {
-                pressed.setType(1);
+                pressed.setType(Piece.Type.Wall);
             }
             else if (!mouseHeld)
             {
                 System.out.println(movedFromUniquePiece);
                 pressed.setType(wasPreviousPieceUnique.getType());
-                wasPreviousPieceUnique.setType(0);
+                wasPreviousPieceUnique.setType(Piece.Type.Empty);
 
                 pieceForRepainting.add(pressed);
                 pieceForRepainting.add(wasPreviousPieceUnique);
@@ -290,9 +290,9 @@ public class DrawGrid extends JPanel {
                 gridObj.paintImmediately(pressed.getX() * gridObj.rectWid, pressed.getY() * gridObj.rectHei, gridObj.rectWid,
                         gridObj.rectHei);
 
-                if (pressed.getType() == 2)
+                if (pressed.getType() == Piece.Type.Start)
                     startPiece = pressed;
-                else if (pressed.getType() == 3)
+                else if (pressed.getType() == Piece.Type.End)
                     endPiece = pressed;
 
                 wasPreviousPieceUnique = null;
@@ -303,7 +303,7 @@ public class DrawGrid extends JPanel {
                 movedFromUniquePiece = true;
 
                 pressed.setType(wasPreviousPieceUnique.getType());
-                wasPreviousPieceUnique.setType(0);
+                wasPreviousPieceUnique.setType(Piece.Type.Empty);
 
                 pieceForRepainting.add(pressed);
                 pieceForRepainting.add(wasPreviousPieceUnique);
@@ -313,9 +313,9 @@ public class DrawGrid extends JPanel {
                 gridObj.paintImmediately(pressed.getX() * gridObj.rectWid, pressed.getY() * gridObj.rectHei, gridObj.rectWid,
                         gridObj.rectHei);
 
-                if (pressed.getType() == 2)
+                if (pressed.getType() == Piece.Type.Start)
                     startPiece = pressed;
-                else if (pressed.getType() == 3)
+                else if (pressed.getType() == Piece.Type.End)
                     endPiece = pressed;
 
                 wasPreviousPieceUnique = pressed;

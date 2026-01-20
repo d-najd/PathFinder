@@ -4,19 +4,18 @@ import com.app.DrawGrid;
 import com.app.Objects.Piece;
 import com.app.Objects.QueuePiece;
 
-import java.io.Console;
 import java.util.*;
 
-public class Bidirectional{
-    static int[] dx={1,-1,0,0};//right, left, NA, NA
-    static int[] dy={0,0,1,-1};//NA, NA, bottom, top
+public class Bidirectional {
+    static int[] dx = {1, -1, 0, 0};//right, left, NA, NA
+    static int[] dy = {0, 0, 1, -1};//NA, NA, bottom, top
 
-    public static void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed){
+    public static void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
         gridObj.visualize_speed = visualizeSpeed;
 
         Queue<QueuePiece> q = new LinkedList<>();
-        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), 2, false);
-        QueuePiece end = new QueuePiece(endPiece.getX(), endPiece.getY(), 3, false);
+        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), Piece.Type.Start);
+        QueuePiece end = new QueuePiece(endPiece.getX(), endPiece.getY(), Piece.Type.End);
         start.addParent(new ArrayList<>(), start);
         end.addParent(new ArrayList<>(), end);
 
@@ -36,13 +35,13 @@ public class Bidirectional{
                     //Checked if x and y are correct. ALL IN 1 GO
                     int xc = curX + dx[i];//Setting current x coordinate
                     int yc = curY + dy[i];//Setting current y coordinate
-                    int type = grid.get(xc).get(yc).getType();//type of current field
+                    var type = grid.get(xc).get(yc).getType();//type of current field
                     Piece tempPiece = grid.get(xc).get(yc);
 
-                    if (type == 0)//Movable. Can't return here again so setting it to 'Blocked' now
+                    if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
                     {
                         tempPiece.setStartType(curr.getStartType());
-                        tempPiece.setType(4);//now BLOCKED
+                        tempPiece.setType(Piece.Type.Checked);//now BLOCKED
                         QueuePiece temp = new QueuePiece(xc, yc);
                         temp.addParent(new ArrayList<>(previous), temp);
                         temp.setStartType(curr.getStartType());
@@ -53,12 +52,13 @@ public class Bidirectional{
                         gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
-                    } else if (((curr.getStartType() == 2 && tempPiece.getStartType() == 3) || (curr.getStartType() == 3 &
-                            tempPiece.getStartType() == 2)) && type == 4) { //Destination found and top tier italiano spaghetti here
+                    } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
+                            Piece.Type.End) || (curr.getStartType() == Piece.Type.End &
+                            tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) { //Destination found and top tier italiano spaghetti here
                         gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
                         boolean success = false;
-                        for (QueuePiece qe : q){
-                            if (qe.getX() == xc && qe.getY() == yc){
+                        for (QueuePiece qe : q) {
+                            if (qe.getX() == xc && qe.getY() == yc) {
                                 ArrayList<QueuePiece> path = new ArrayList<>(qe.getPath());
                                 Collections.reverse(path);
                                 path.add(0, new QueuePiece(-1, -1)); //my italian spaghetti forced me to do this
@@ -68,7 +68,7 @@ public class Bidirectional{
                                 break;
                             }
                         }
-                        if (success = false){
+                        if (success = false) {
                             System.out.println("can't find the tempiece and only half the shortest path will be drawn");
                         }
                         gridObj.visualize_speed = 0;

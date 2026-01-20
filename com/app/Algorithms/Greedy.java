@@ -56,9 +56,9 @@ public class Greedy {
                     //Checked if x and y are correct. ALL IN 1 GO
                     int xc = curX + dx[i];//Setting current x coordinate
                     int yc = curY + dy[i];//Setting current y coordinate
-                    int type = grid.get(xc).get(yc).getType();//type of current field
+                    var type = grid.get(xc).get(yc).getType();//type of current field
 
-                    if (type == 0)//add the piece to the list for it to be processed later
+                    if (type == Piece.Type.Empty)//add the piece to the list for it to be processed later
                     {
                         QueuePiece temp = new QueuePiece(xc, yc, calDis(xc, yc));
                         temp.addParent(new ArrayList<>(previous_), temp);
@@ -67,7 +67,7 @@ public class Greedy {
                         if (q.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
                             q.add(temp);//Adding current coordinates to the queue
 
-                    } else if (type == 3) { //Destination found
+                    } else if (type == Piece.Type.End) { //Destination found
                         gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
                         gridObj.visualize_speed = 0;
                         return;
@@ -79,7 +79,7 @@ public class Greedy {
             QueuePiece cPiece = q.peek(); //closest piece to the end
             int cPieceX = cPiece.getX();
             int cPieceY = cPiece.getY();
-            grid.get(cPieceX).get(cPieceY).setType(4);//now BLOCKED
+            grid.get(cPieceX).get(cPieceY).setType(Piece.Type.Checked);//now BLOCKED
 
             //paint the piece
             gridObj.pieceForRepainting.add(grid.get(cPieceX).get(cPieceY));
