@@ -2,6 +2,7 @@ package com.app;
 import com.app.Algorithms.Bidirectional;
 import com.app.Algorithms.BreadthFirst;
 import com.app.Algorithms.Greedy;
+import com.app.Algorithms.SearchAlgorithm;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +20,7 @@ public class MainFunction{
     private static final int btnHei = Settings.BUTTON_HEI;
 
     private static MenuConstructor algorithmsMenu;
-    private static String currentAlgorithm = "breadth";
+    private static SearchAlgorithm currentAlgorithm = SearchAlgorithm.BreadthFirst;
 
     public static void main(String[] args){
         frame = new JFrame("Pathfinding");
@@ -81,47 +82,35 @@ public class MainFunction{
         JButton button;
 
         button = new JButton("Breadth first");
-        button.setActionCommand("algorithm_breadth");
-        button.addActionListener(new ButtonListener());
+        button.addActionListener(_ -> { currentAlgorithm = SearchAlgorithm.BreadthFirst; });
         algorithmsList.add(button);
 
         button = new JButton("Greedy best first");
-        button.setActionCommand("algorithm_greedy");
-        button.addActionListener(new ButtonListener());
+        button.addActionListener(_ -> { currentAlgorithm = SearchAlgorithm.Greedy; });
         algorithmsList.add(button);
 
         button = new JButton("Bidirectional swarm");
-        button.setActionCommand("algorithm_bi_swarm");
-        button.addActionListener(new ButtonListener());
+        button.addActionListener(_ -> { currentAlgorithm = SearchAlgorithm.Bidirectional; });
         algorithmsList.add(button);
 
         algorithmsMenu = new MenuConstructor(p, rootButton, algorithmsList, null);
     }
 
-    static class ButtonListener implements ActionListener{
+    static class ButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand().toLowerCase()){
-                case "algorithm_breadth":
-                    currentAlgorithm = "breadth";
-                    break;
-                case "algorithm_greedy":
-                    currentAlgorithm = "greedy";
-                    break;
-                case "algorithm_bi_swarm":
-                    currentAlgorithm = "bi_swarm";
-                    break;
                 case "algorithms":
                     algorithmsMenu.swapState();
                     break;
                 case "visualize":
-                    if (currentAlgorithm.equals("breadth")) {
+                    if (currentAlgorithm == SearchAlgorithm.BreadthFirst) {
                         BreadthFirst.start(grid.startPiece, grid.gridPieces, grid, Settings.VISUALIZE_SPEED);
                     }
-                    else if (currentAlgorithm.equals("greedy")){
+                    else if (currentAlgorithm == SearchAlgorithm.Greedy){
                         Greedy.start(grid.startPiece, grid.endPiece, grid.gridPieces, grid, Settings.VISUALIZE_SPEED);
                     }
-                    else if (currentAlgorithm.equals("bi_swarm")) {
+                    else if (currentAlgorithm == SearchAlgorithm.Bidirectional) {
                         Bidirectional.start(grid.startPiece, grid.endPiece, grid.gridPieces, grid, Settings.VISUALIZE_SPEED);
                     }
                     else{
@@ -139,15 +128,6 @@ public class MainFunction{
                 default:
                     System.out.println("[ERROR] the current button has not been defined, its action command is: " + e.getActionCommand());
             }
-            /*
-            if (e.getActionCommand().equals("Visualize"))
-            {
-                BreadthFirst.Start(grid.startPiece, grid.gridPieces, grid);
-                System.out.println("Visualize baby");
-            } else
-                System.out.println("the current button has not been defined, its action command is: " + e.getActionCommand());
-
-             */
         }
     }
 }
