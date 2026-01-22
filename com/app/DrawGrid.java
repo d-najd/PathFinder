@@ -94,20 +94,22 @@ public class DrawGrid extends JPanel {
         startPiece = gridPieces.get(0).get(0);
         startPiece.setType(Piece.Type.Start);
         endPiece = gridPieces.get(xAxisPieces - 1).get(yAxisPieces - 1);
-        //endPiece.setType(Piece.Type.End);
+        endPiece.setType(Piece.Type.End);
         JPanel startPPanel = new JPanel();
         JPanel endPPanel = new JPanel();
         add(endPPanel);
         add(startPPanel);
         endPPanel.setBackground(Color.orange);
         startPPanel.setBackground(startPiece.getColor());
-        endPiece.setStartType(Piece.Type.Empty);
+        //endPiece.setStartType(Piece.Type.Empty);
 
+        /*
         Rectangle from = AnimatorHelper.calculateCenter(endPiece);
         Rectangle to = AnimatorHelper.calculateEndPos(endPiece);
 
         Animator animator = new Animator(endPPanel, from, to, 5000);
         animator.ripple();
+         */
 
         /*
         Rectangle from = new Rectangle((Settings.RECT_WID - startPiece.getX() / 2 ) / 2,
