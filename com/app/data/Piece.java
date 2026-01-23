@@ -51,7 +51,7 @@ public class Piece {
     private static Color getColor(Type type){
         return switch (type) {
             case Empty -> Color.white;
-            case Wall -> new Color(64, 64, 64);
+            case Wall -> Color.darkGray;
             case Start -> Color.red;
             case End -> new Color(0, 128, 0);
             case Checked -> Color.blue;
