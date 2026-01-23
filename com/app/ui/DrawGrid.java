@@ -1,7 +1,8 @@
-package com.app;
+package com.app.ui;
 
 import com.app.Objects.Piece;
 import com.app.Objects.QueuePiece;
+import com.app.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +22,12 @@ public class DrawGrid extends JPanel {
 
     private Piece wasPreviousPieceUnique; //by unique it means start or end position, because when you hold the left click and move the mouse the start position has to move with it
     public ArrayList<Piece> pieceForRepainting = new ArrayList<>();
-    
+
+    public DrawGrid() {
+        setLayout(null);
+        setBounds(Settings.GRID_OFFSET_X, Settings.GRID_OFFSET_Y, Settings.GRID_WID * getRectWid() + 1, Settings.GRID_HEI * getRectHei() + 1);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -40,16 +46,14 @@ public class DrawGrid extends JPanel {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        else if (!gridDrawn) {
+        } else if (!gridDrawn) {
             drawGrid((Graphics2D) g);
             gridDrawn = true;
             drawStartPositions();
         } else {
             Graphics2D g2d = (Graphics2D) g;
             for (ArrayList<Piece> pieces : gridPieces)
-                for (Piece piece : pieces)
-                {
+                for (Piece piece : pieces) {
                     g2d.setColor(piece.getColor());
                     g2d.fill(piece.getRect());
                     g2d.setColor(Color.black);
@@ -71,7 +75,7 @@ public class DrawGrid extends JPanel {
         startPPanel.setBackground(startPiece.getColor());
     }
 
-    private void drawGrid(Graphics2D g){
+    private void drawGrid(Graphics2D g) {
         if (!gridPieces.isEmpty())
             System.out.println("[ERROR] there are already pieces when creating the grid wtf?");
 
@@ -90,8 +94,8 @@ public class DrawGrid extends JPanel {
         new GridListeners(gridPieces, this);
     }
 
-    public void DrawShortestPath(ArrayList<QueuePiece> path){
-        for (int i = 1; i < path.size(); i++){
+    public void DrawShortestPath(ArrayList<QueuePiece> path) {
+        for (int i = 1; i < path.size(); i++) {
             QueuePiece curPiece = path.get(i);
 
             gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display shortest path type
@@ -106,10 +110,10 @@ public class DrawGrid extends JPanel {
         }
     }
 
-    protected void ClearBoard(){
+    protected void ClearBoard() {
         visualize_speed = 0;
 
-        for (ArrayList<Piece> colPieceArr : gridPieces){
+        for (ArrayList<Piece> colPieceArr : gridPieces) {
             for (Piece curPiece : colPieceArr)
                 if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath || curPiece.getType() == Piece.Type.Wall)
                     curPiece.setType(Piece.Type.Empty);
@@ -120,10 +124,10 @@ public class DrawGrid extends JPanel {
 
     }
 
-    protected void ClearPath(){
+    protected void ClearPath() {
         visualize_speed = 0;
 
-        for (ArrayList<Piece> colPieceArr : gridPieces){
+        for (ArrayList<Piece> colPieceArr : gridPieces) {
             for (Piece curPiece : colPieceArr)
                 if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
                     curPiece.setType(Piece.Type.Empty);
@@ -133,15 +137,15 @@ public class DrawGrid extends JPanel {
                 Settings.GRID_HEI * Settings.RECT_WID);
     }
 
-    public int getRectWid(){
+    public int getRectWid() {
         return Settings.RECT_WID;
     }
 
-    public int getRectHei(){
+    public int getRectHei() {
         return Settings.RECT_WID;
     }
 
-    class GridListeners implements MouseListener, MouseMotionListener{
+    class GridListeners implements MouseListener, MouseMotionListener {
         private ArrayList<ArrayList<Piece>> grid;
         private DrawGrid gridObj;
         private Piece lastPressed;
@@ -149,14 +153,14 @@ public class DrawGrid extends JPanel {
         private boolean mouseHeld; //for knowing if the mouse is being held down
         private boolean movedFromUniquePiece; //its hard to press once without holding so had to add special case for it (for startPiece and endPiece)
 
-        GridListeners(ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj){
+        GridListeners(ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj) {
             this.grid = grid;
             this.gridObj = gridObj;
             gridObj.addMouseListener(this);
             gridObj.addMouseMotionListener(this);
         }
 
-        private Piece PressedPiece(int xPos, int yPos){
+        private Piece PressedPiece(int xPos, int yPos) {
             Rectangle2D rect;
             Piece piece = null;
 
@@ -196,7 +200,7 @@ public class DrawGrid extends JPanel {
             } else if (pressed.getType() == Piece.Type.Wall) {
                 pressed.setType(Piece.Type.Empty);
                 wasPreviousPieceUnique = null;
-            } else if ((pressed.getType() == Piece.Type.Start || pressed.getType() == Piece.Type.End) && wasPreviousPieceUnique == null && !mouseHeld){
+            } else if ((pressed.getType() == Piece.Type.Start || pressed.getType() == Piece.Type.End) && wasPreviousPieceUnique == null && !mouseHeld) {
                 wasPreviousPieceUnique = pressed;
                 return;
             }
@@ -210,9 +214,7 @@ public class DrawGrid extends JPanel {
         private void IfPieceEmpty(Piece pressed) {
             if (wasPreviousPieceUnique == null) {
                 pressed.setType(Piece.Type.Wall);
-            }
-            else if (!mouseHeld)
-            {
+            } else if (!mouseHeld) {
                 System.out.println(movedFromUniquePiece);
                 pressed.setType(wasPreviousPieceUnique.getType());
                 wasPreviousPieceUnique.setType(Piece.Type.Empty);
@@ -233,7 +235,7 @@ public class DrawGrid extends JPanel {
                 wasPreviousPieceUnique = null;
             }
             //checking so it doesn't repaint the same piece while the cursor is held on the piece that is unique (startpiece, endpiece)
-            else if (lastPressed != pressed){
+            else if (lastPressed != pressed) {
                 System.out.println("hello there " + movedFromUniquePiece);
                 movedFromUniquePiece = true;
 

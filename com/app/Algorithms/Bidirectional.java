@@ -1,6 +1,6 @@
 package com.app.Algorithms;
 
-import com.app.DrawGrid;
+import com.app.ui.DrawGrid;
 import com.app.Objects.Piece;
 import com.app.Objects.QueuePiece;
 
@@ -28,7 +28,7 @@ public class Bidirectional implements ISearchAlgorithm {
         q.add(start);
 
         while (q.peek() != null) {
-            List<QueuePiece> previous = Collections.unmodifiableList(new ArrayList<>(q.peek().getPath())); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
+            List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
 
             QueuePiece curr = q.poll();//poll or remove. Same thing
             int curX = curr.getX();

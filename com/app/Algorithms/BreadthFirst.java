@@ -1,6 +1,6 @@
 package com.app.Algorithms;
 
-import com.app.DrawGrid;
+import com.app.ui.DrawGrid;
 import com.app.Objects.Piece;
 import com.app.Objects.QueuePiece;
 
