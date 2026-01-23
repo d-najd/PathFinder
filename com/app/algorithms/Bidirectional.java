@@ -30,13 +30,13 @@ public class Bidirectional implements ISearchAlgorithm {
         while (q.peek() != null) {
             List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
 
-            QueuePiece curr = q.poll();//poll or remove. Same thing
+            QueuePiece curr = q.poll(); //poll or remove. Same thing
             int curX = curr.getX();
             int curY = curr.getY();
-            for (int i = 0; i < 4; i++)//for each direction
+            for (int i = 0; i < 4; i++) //for each direction
             {
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
-                        (curY + dy[i] >= 0 && curY + dy[i] < grid.get(0).size())) {
+                        (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
                     //Checked if x and y are correct. ALL IN 1 GO
                     int xc = curX + dx[i];//Setting current x coordinate
                     int yc = curY + dy[i];//Setting current y coordinate
@@ -73,7 +73,7 @@ public class Bidirectional implements ISearchAlgorithm {
                                 break;
                             }
                         }
-                        if (success = false) {
+                        if (!success) {
                             System.out.println("can't find the tempiece and only half the shortest path will be drawn");
                         }
                         gridObj.visualize_speed = 0;
