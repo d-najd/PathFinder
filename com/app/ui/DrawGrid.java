@@ -94,7 +94,7 @@ public class DrawGrid extends JPanel {
         new GridListeners(gridPieces, this);
     }
 
-    public void DrawShortestPath(ArrayList<QueuePiece> path) {
+    public void drawShortestPath(ArrayList<QueuePiece> path) {
         for (int i = 1; i < path.size(); i++) {
             QueuePiece curPiece = path.get(i);
 
@@ -110,7 +110,7 @@ public class DrawGrid extends JPanel {
         }
     }
 
-    protected void ClearBoard() {
+    protected void clearBoard() {
         visualize_speed = 0;
 
         for (ArrayList<Piece> colPieceArr : gridPieces) {
@@ -124,7 +124,7 @@ public class DrawGrid extends JPanel {
 
     }
 
-    protected void ClearPath() {
+    protected void clearPath() {
         visualize_speed = 0;
 
         for (ArrayList<Piece> colPieceArr : gridPieces) {
@@ -179,15 +179,15 @@ public class DrawGrid extends JPanel {
         @Override
         public void mouseDragged(MouseEvent e) {
             mouseHeld = true;
-            PiecePressed(e);
+            piecePressed(e);
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
-            PiecePressed(e);
+            piecePressed(e);
         }
 
-        private void PiecePressed(MouseEvent e) {
+        private void piecePressed(MouseEvent e) {
             Piece pressed = PressedPiece(e.getX(), e.getY());
             if (e.getButton() != 1 && !mouseHeld || pressed == null)
                 return;
@@ -196,7 +196,7 @@ public class DrawGrid extends JPanel {
                 return;
 
             if (pressed.getType() == Piece.Type.Empty) {
-                IfPieceEmpty(pressed);
+                ifPieceEmpty(pressed);
             } else if (pressed.getType() == Piece.Type.Wall) {
                 pressed.setType(Piece.Type.Empty);
                 wasPreviousPieceUnique = null;
@@ -211,7 +211,7 @@ public class DrawGrid extends JPanel {
         }
 
         //if the piece is empty and is being pressed do the following function
-        private void IfPieceEmpty(Piece pressed) {
+        private void ifPieceEmpty(Piece pressed) {
             if (wasPreviousPieceUnique == null) {
                 pressed.setType(Piece.Type.Wall);
             } else if (!mouseHeld) {

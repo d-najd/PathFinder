@@ -65,7 +65,7 @@ public class BreadthFirst implements ISearchAlgorithm {
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
                     } else if (type == Piece.Type.End) { //Destination found
-                        gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
+                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         gridObj.visualize_speed = 0;
                         return;
                     }

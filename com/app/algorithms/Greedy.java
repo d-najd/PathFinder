@@ -73,7 +73,7 @@ public class Greedy implements ISearchAlgorithm{
                             q.add(temp);//Adding current coordinates to the queue
 
                     } else if (type == Piece.Type.End) { //Destination found
-                        gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
+                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         gridObj.visualize_speed = 0;
                         return;
                     }

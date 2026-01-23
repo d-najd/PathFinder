@@ -50,12 +50,12 @@ public class ContentButtons extends JPanel {
 
         button = new JButton("Clear Board");
         button.setBounds(centerX + (Settings.BUTTON_WID / 2) + Settings.BUTTON_MARGIN, 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
-        button.addActionListener(_ -> drawGrid.ClearBoard());
+        button.addActionListener(_ -> drawGrid.clearBoard());
         add(button);
 
         button = new JButton("Clear Path");
         button.setBounds((int) (centerX + Settings.BUTTON_WID * 1.5 + Settings.BUTTON_MARGIN * 2), 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
-        button.addActionListener(_ -> drawGrid.ClearPath());
+        button.addActionListener(_ -> drawGrid.clearPath());
         add(button);
     }
 

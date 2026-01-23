@@ -22,7 +22,6 @@ public class RippleAnimation {
         return keyframes;
     }
 
-
     public static KeyFrame _75(){
         double index = 1.1;
         int width = (int) Math.round(wid * index);
@@ -41,7 +40,6 @@ public class RippleAnimation {
         int y = (int) Math.round(inputAnim.to.y);
         return new KeyFrame(75, new Rectangle(x, y, width, height));
     }
-
 
     public static KeyFrame _90(){
         double index = 0.95;

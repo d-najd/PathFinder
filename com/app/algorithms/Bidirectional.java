@@ -60,7 +60,7 @@ public class Bidirectional implements ISearchAlgorithm {
                     } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
                             Piece.Type.End) || (curr.getStartType() == Piece.Type.End &
                             tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) { //Destination found and top tier italiano spaghetti here
-                        gridObj.DrawShortestPath(new ArrayList<>(curr.getPath()));
+                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         boolean success = false;
                         for (QueuePiece qe : q) {
                             if (qe.getX() == xc && qe.getY() == yc) {
@@ -68,7 +68,7 @@ public class Bidirectional implements ISearchAlgorithm {
                                 Collections.reverse(path);
                                 path.add(0, new QueuePiece(-1, -1)); //my italian spaghetti forced me to do this
                                 path.remove(path.size() - 1);
-                                gridObj.DrawShortestPath(path);
+                                gridObj.drawShortestPath(path);
                                 success = true;
                                 break;
                             }
