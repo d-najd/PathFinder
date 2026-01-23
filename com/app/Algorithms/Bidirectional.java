@@ -6,11 +6,16 @@ import com.app.Objects.QueuePiece;
 
 import java.util.*;
 
-public class Bidirectional {
+public class Bidirectional implements ISearchAlgorithm {
     static int[] dx = {1, -1, 0, 0};//right, left, NA, NA
     static int[] dy = {0, 0, 1, -1};//NA, NA, bottom, top
 
-    public static void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
+    @Override
+    public SearchAlgorithm currentAlgorithm() {
+        return SearchAlgorithm.Bidirectional;
+    }
+
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
         gridObj.visualize_speed = visualizeSpeed;
 
         Queue<QueuePiece> q = new LinkedList<>();

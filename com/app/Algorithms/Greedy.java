@@ -7,7 +7,7 @@ import com.app.Objects.QueuePiece;
 
 import java.util.*;
 
-public class Greedy {
+public class Greedy implements ISearchAlgorithm{
     /**
      * so the way that this algorithm work is:
      * the algorithm looks at all the neighbors, and it calculates the distance from itself to the finish, it does this
@@ -26,7 +26,12 @@ public class Greedy {
     private static int endX;
     private static int endY;
 
-    public static void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed){
+    @Override
+    public SearchAlgorithm currentAlgorithm() {
+        return SearchAlgorithm.Greedy;
+    }
+
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed){
         gridObj.visualize_speed = visualizeSpeed;
         endX = endPiece.getX();
         endY = endPiece.getY();;

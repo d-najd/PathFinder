@@ -5,7 +5,7 @@ import com.app.Objects.Piece;
 
 import java.util.ArrayList;
 
-interface ISearchAlgorithm {
+public interface ISearchAlgorithm {
 
     public SearchAlgorithm currentAlgorithm();
 

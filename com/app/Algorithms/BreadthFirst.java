@@ -6,7 +6,7 @@ import com.app.Objects.QueuePiece;
 
 import java.util.*;
 
-public class BreadthFirst{
+public class BreadthFirst implements ISearchAlgorithm {
     /**
      * creating an unmodifiable instance of the last list selected, so it doesn't modify when for example if
      * there is a grid with this layout, where S is start, E is empty and F is finish:
@@ -22,7 +22,12 @@ public class BreadthFirst{
     static int[] dx={1,-1,0,0};//right, left, NA, NA
     static int[] dy={0,0,1,-1};//NA, NA, bottom, top
 
-    public static void start(Piece startPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
+    @Override
+    public SearchAlgorithm currentAlgorithm() {
+        return SearchAlgorithm.BreadthFirst;
+    }
+
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
         gridObj.visualize_speed = visualizeSpeed;
 
         Queue<QueuePiece> q = new LinkedList<>();

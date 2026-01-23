@@ -1,7 +1,5 @@
 package com.app;
 
-import com.app.Animations.Animator;
-import com.app.Animations.AnimatorHelper;
 import com.app.Objects.Piece;
 import com.app.Objects.QueuePiece;
 
@@ -20,17 +18,10 @@ public class DrawGrid extends JPanel {
     public int visualize_speed = 0;
 
     private boolean gridDrawn = false;
-    private int xAxisPieces;
-    private int yAxisPieces;
-
-    private final int rectWid = Settings.RECT_WID;
-    private final int rectHei = rectWid;
-    private final int rectX = rectWid;
-    private final int rectY = rectHei;
 
     private Piece wasPreviousPieceUnique; //by unique it means start or end position, because when you hold the left click and move the mouse the start position has to move with it
     public ArrayList<Piece> pieceForRepainting = new ArrayList<>();
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -51,11 +42,10 @@ public class DrawGrid extends JPanel {
             }
         }
         else if (!gridDrawn) {
-            DrawGrid(g);
+            drawGrid((Graphics2D) g);
             gridDrawn = true;
-            drawStartPositions(g);
+            drawStartPositions();
         } else {
-            //System.out.println("[WARRNING] um trying to repaint something but there is nothing to repaint?");
             Graphics2D g2d = (Graphics2D) g;
             for (ArrayList<Piece> pieces : gridPieces)
                 for (Piece piece : pieces)
@@ -66,34 +56,12 @@ public class DrawGrid extends JPanel {
                     g2d.draw(piece.getRect());
                 }
         }
-
-        /**
-         * @NOTE repainting the grid using DrawGrid is a bad idea because it will paint another grid on top of the first
-         * one and add the elements to
-         * @param pieces which is a really bad idea and will cause a memory leak
-         */
     }
 
-    private void oldDrawStartPositions(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        Rectangle2D tempRect;
-
-        //it seems I took startPiece out of here accidentally
-
-        endPiece = gridPieces.get(xAxisPieces - 1).get(yAxisPieces - 1);
-        endPiece.setType(Piece.Type.End);
-        tempRect = endPiece.getRect();
-        g2d.setColor(endPiece.getColor());
-        g2d.fill(tempRect);
-        g2d.setColor(Color.black);
-        g2d.draw(tempRect);
-    }
-
-    private void drawStartPositions(Graphics g) {
-        //initial setup
-        startPiece = gridPieces.get(0).get(0);
+    private void drawStartPositions() {
+        startPiece = gridPieces.getFirst().getFirst();
         startPiece.setType(Piece.Type.Start);
-        endPiece = gridPieces.get(xAxisPieces - 1).get(yAxisPieces - 1);
+        endPiece = gridPieces.get(Settings.GRID_WID - 1).get(Settings.GRID_HEI - 1);
         endPiece.setType(Piece.Type.End);
         JPanel startPPanel = new JPanel();
         JPanel endPPanel = new JPanel();
@@ -101,60 +69,25 @@ public class DrawGrid extends JPanel {
         add(startPPanel);
         endPPanel.setBackground(Color.orange);
         startPPanel.setBackground(startPiece.getColor());
-        //endPiece.setStartType(Piece.Type.Empty);
-
-        /*
-        Rectangle from = AnimatorHelper.calculateCenter(endPiece);
-        Rectangle to = AnimatorHelper.calculateEndPos(endPiece);
-
-        Animator animator = new Animator(endPPanel, from, to, 5000);
-        animator.ripple();
-         */
-
-        /*
-        Rectangle from = new Rectangle((Settings.RECT_WID - startPiece.getX() / 2 ) / 2,
-                (Settings.RECT_WID - startPiece.getY()/2) / 2, 0, 0);
-        Rectangle to = new Rectangle(startPiece.getX() + 1,
-                startPiece.getY() + 1, Settings.RECT_WID - 1, Settings.RECT_WID - 1);
-
-        Animator animator = new Animator(startPPanel, from, to, 1000);
-        animator.RippleAnimation();
-         */
-
-
-        //AnimatorOld.Animate animate2 = new AnimatorOld.Animate(subPanel, from, to);
-        //animate2.start();
     }
 
-    private ArrayList<ArrayList<Piece>> DrawGrid(Graphics g){
-        Graphics2D g2d = (Graphics2D) g;
+    private void drawGrid(Graphics2D g){
         if (!gridPieces.isEmpty())
             System.out.println("[ERROR] there are already pieces when creating the grid wtf?");
 
-        for (int x = 0; x < xAxisPieces; x++) {
+        for (int x = 0; x < Settings.GRID_WID; x++) {
             ArrayList<Piece> tempArr = new ArrayList<>();
-            for (int y = 0; y < yAxisPieces; y++) {
+            for (int y = 0; y < Settings.GRID_HEI; y++) {
                 var newPiece = new Piece(x, y);
-                g2d.setColor(Color.WHITE);
-                g2d.fill(newPiece.getRect());
-                g2d.setColor(Color.black);
-                g2d.draw(newPiece.getRect());
+                g.setColor(Color.WHITE);
+                g.fill(newPiece.getRect());
+                g.setColor(Color.black);
+                g.draw(newPiece.getRect());
                 tempArr.add(newPiece);
             }
             gridPieces.add(tempArr);
         }
         new GridListeners(gridPieces, this);
-        return gridPieces;
-    }
-
-    // create the GUI explicitly on the Swing event thread
-    public void createAndShowGui(int xAxisPieces_, int yAxisPieces_) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                xAxisPieces = xAxisPieces_;
-                yAxisPieces = yAxisPieces_;
-            }
-        });
     }
 
     public void DrawShortestPath(ArrayList<QueuePiece> path){
@@ -163,8 +96,8 @@ public class DrawGrid extends JPanel {
 
             gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display shortest path type
             pieceForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
-            paintImmediately(curPiece.getX() * rectWid, curPiece.getY() * rectHei, rectWid,
-                    rectHei);
+            paintImmediately(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                    Settings.RECT_WID);
             try {
                 Thread.sleep(Settings.SHORTEST_VISUALIZE_SPEED);
             } catch (InterruptedException e) {
@@ -182,8 +115,8 @@ public class DrawGrid extends JPanel {
                     curPiece.setType(Piece.Type.Empty);
             pieceForRepainting.addAll(colPieceArr);
         }
-        paintImmediately(0, 0, Settings.GRID_WID * rectWid,
-                Settings.GRID_HEI * rectHei);
+        paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
+                Settings.GRID_HEI * Settings.RECT_WID);
 
     }
 
@@ -196,16 +129,16 @@ public class DrawGrid extends JPanel {
                     curPiece.setType(Piece.Type.Empty);
             pieceForRepainting.addAll(colPieceArr);
         }
-        paintImmediately(0, 0, Settings.GRID_WID * rectWid,
-                Settings.GRID_HEI * rectHei);
+        paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
+                Settings.GRID_HEI * Settings.RECT_WID);
     }
 
     public int getRectWid(){
-        return rectWid;
+        return Settings.RECT_WID;
     }
 
     public int getRectHei(){
-        return rectHei;
+        return Settings.RECT_WID;
     }
 
     class GridListeners implements MouseListener, MouseMotionListener{
@@ -227,11 +160,11 @@ public class DrawGrid extends JPanel {
             Rectangle2D rect;
             Piece piece = null;
 
-            for (int x = 0; x < grid.size(); x++){
-                for (int y = 0; y < grid.get(x).size(); y++){
-                    rect = grid.get(x).get(y).getRect();
-                    if (rect.contains(xPos, yPos)){
-                        piece = grid.get(x).get(y);
+            for (ArrayList<Piece> pieces : grid) {
+                for (Piece value : pieces) {
+                    rect = value.getRect();
+                    if (rect.contains(xPos, yPos)) {
+                        piece = value;
                         return piece;
                     }
                 }
@@ -268,8 +201,8 @@ public class DrawGrid extends JPanel {
                 return;
             }
             gridObj.pieceForRepainting.add(pressed);
-            gridObj.repaint(pressed.getX() * gridObj.rectWid, pressed.getY() * gridObj.rectHei, gridObj.rectWid,
-                    gridObj.rectHei);
+            gridObj.repaint(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                    Settings.RECT_WID);
             lastPressed = pressed;
         }
 
@@ -287,10 +220,10 @@ public class DrawGrid extends JPanel {
                 pieceForRepainting.add(pressed);
                 pieceForRepainting.add(wasPreviousPieceUnique);
 
-                gridObj.paintImmediately(wasPreviousPieceUnique.getX() * gridObj.rectWid, wasPreviousPieceUnique.getY() * gridObj.rectHei, gridObj.rectWid,
-                        gridObj.rectHei);
-                gridObj.paintImmediately(pressed.getX() * gridObj.rectWid, pressed.getY() * gridObj.rectHei, gridObj.rectWid,
-                        gridObj.rectHei);
+                gridObj.paintImmediately(wasPreviousPieceUnique.getX() * Settings.RECT_WID, wasPreviousPieceUnique.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                        Settings.RECT_WID);
+                gridObj.paintImmediately(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                        Settings.RECT_WID);
 
                 if (pressed.getType() == Piece.Type.Start)
                     startPiece = pressed;
@@ -310,10 +243,10 @@ public class DrawGrid extends JPanel {
                 pieceForRepainting.add(pressed);
                 pieceForRepainting.add(wasPreviousPieceUnique);
 
-                gridObj.paintImmediately(wasPreviousPieceUnique.getX() * gridObj.rectWid, wasPreviousPieceUnique.getY() * gridObj.rectHei, gridObj.rectWid,
-                        gridObj.rectHei);
-                gridObj.paintImmediately(pressed.getX() * gridObj.rectWid, pressed.getY() * gridObj.rectHei, gridObj.rectWid,
-                        gridObj.rectHei);
+                gridObj.paintImmediately(wasPreviousPieceUnique.getX() * Settings.RECT_WID, wasPreviousPieceUnique.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                        Settings.RECT_WID);
+                gridObj.paintImmediately(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID, Settings.RECT_WID,
+                        Settings.RECT_WID);
 
                 if (pressed.getType() == Piece.Type.Start)
                     startPiece = pressed;
