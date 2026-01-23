@@ -17,12 +17,7 @@ public class Piece {
     }
 
     public Rectangle2D getRect() {
-        var rectWid = Settings.RECT_WID;
-        var rectHei = rectWid;
-        var rectX = rectWid;
-        var rectY = rectHei;
-
-        return new Rectangle2D.Double(x * rectX, y * rectY, rectWid, rectHei);
+        return new Rectangle2D.Double(x * Settings.RECT_WID, y * Settings.RECT_WID, Settings.RECT_WID, Settings.RECT_WID);
     }
 
     public Color getColor() {
