@@ -6,9 +6,7 @@ import com.app.data.Piece;
 import java.util.ArrayList;
 
 public interface ISearchAlgorithm {
+    SearchAlgorithm currentAlgorithm();
 
-    public SearchAlgorithm currentAlgorithm();
-
-    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed);
-
+    void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed);
 }
