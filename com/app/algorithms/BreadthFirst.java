@@ -4,8 +4,11 @@ import com.app.data.Piece;
 import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.function.Supplier;
 
 public class BreadthFirst implements ISearchAlgorithm {
     /**
@@ -28,54 +31,59 @@ public class BreadthFirst implements ISearchAlgorithm {
         return SearchAlgorithm.BreadthFirst;
     }
 
-    public CompletableFuture<Void> start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed) {
-        return CompletableFuture.runAsync(() -> {
-            gridObj.visualize_speed = visualizeSpeed;
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
+        Queue<QueuePiece> q = new LinkedList<>();
+        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY()); //Start piece
+        start.addParent(new ArrayList<>(), start);
 
-            Queue<QueuePiece> q = new LinkedList<>();
-            QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY()); //Start piece
-            start.addParent(new ArrayList<>(), start);
+        q.add(start);//Adding start to the queue since we're already visiting it
 
-            q.add(start);//Adding start to the queue since we're already visiting it
+        while (q.peek() != null) {
+            List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
 
-            while (q.peek() != null) {
-                List<QueuePiece> previous = Collections.unmodifiableList(new ArrayList<>(q.peek().getPath())); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
+            QueuePiece curr = q.poll();//poll or remove. Same thing
+            assert curr != null;
+            int curX = curr.getX();
+            int curY = curr.getY();
+            for (int i = 0; i < 4; i++)//for each direction
+            {
+                if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
+                        (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
+                    //Checked if x and y are correct. ALL IN 1 GO
+                    int xc = curX + dx[i];//Setting current x coordinate
+                    int yc = curY + dy[i];//Setting current y coordinate
+                    var type = grid.get(xc).get(yc).getType();//type of current field
 
-                QueuePiece curr = q.poll();//poll or remove. Same thing
-                int curX = curr.getX();
-                int curY = curr.getY();
-                for (int i = 0; i < 4; i++)//for each direction
-                {
-                    if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
-                            (curY + dy[i] >= 0 && curY + dy[i] < grid.get(0).size())) {
-                        //Checked if x and y are correct. ALL IN 1 GO
-                        int xc = curX + dx[i];//Setting current x coordinate
-                        int yc = curY + dy[i];//Setting current y coordinate
-                        var type = grid.get(xc).get(yc).getType();//type of current field
+                    if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
+                    {
+                        grid.get(xc).get(yc).setType(Piece.Type.Checked);//now BLOCKED
+                        QueuePiece temp = new QueuePiece(xc, yc);
+                        temp.addParent(new ArrayList<>(previous), temp);
+                        q.add(temp);//Adding current coordinates to the queue
 
+                        //paint the piece
 
-                        if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
-                        {
-                            grid.get(xc).get(yc).setType(Piece.Type.Checked);//now BLOCKED
-                            QueuePiece temp = new QueuePiece(xc, yc);
-                            temp.addParent(new ArrayList<>(previous), temp);
-                            q.add(temp);//Adding current coordinates to the queue
-
-                            //paint the piece
-                            gridObj.pieceForRepainting.add(grid.get(xc).get(yc));
-                            gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
-                                    temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-                                    gridObj.getRectHei());
-                        } else if (type == Piece.Type.End) { //Destination found
-                            gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
-                            gridObj.visualize_speed = 0;
+                        if (currentAlgorithm.get() != currentAlgorithm()) {
                             return;
                         }
+
+                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
+                                temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+                                gridObj.getRectHei());
+
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(visualizeSpeed);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (type == Piece.Type.End) { //Destination found
+                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
+                        return;
                     }
                 }
             }
-            System.out.println("no route possible");
-            gridObj.visualize_speed = 0;
-        });
+        }
+        System.out.println("no route possible");
     }
 }

@@ -16,12 +16,12 @@ public class Settings {
     public static final int CENTER_OFFSET = 12;
     public static final int WINDOW_WID = 900;
     public static final int WINDOW_HEI = 800;
-    public static final int GRID_WID = 5;
-    public static final int GRID_HEI = 5;
+    public static final int GRID_WID = 25;
+    public static final int GRID_HEI = 25;
     public static final int BUTTON_WID = 150;
     public static final int BUTTON_HEI = 30;
     public static final int BUTTON_MARGIN = 5;
-    public static final int RECT_WID = 50;
+    public static final int RECT_WID = 10;
     public static final int VISUALIZE_SPEED = 15;
     public static final int SHORTEST_VISUALIZE_SPEED = 0;
     public static final int GRID_OFFSET_X = WINDOW_WID/2 - ((RECT_WID * GRID_WID)/2) - CENTER_OFFSET;

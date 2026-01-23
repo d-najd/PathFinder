@@ -4,10 +4,10 @@ import com.app.ui.DrawGrid;
 import com.app.data.Piece;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public interface ISearchAlgorithm {
     SearchAlgorithm currentAlgorithm();
 
-    CompletableFuture<Void> start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed);
+    void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm);
 }

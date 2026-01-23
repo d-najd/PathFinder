@@ -6,13 +6,23 @@ import com.app.Settings;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ContentButtons extends JPanel {
+    private static SearchAlgorithm runningAlgorithm = null;
+
+    public static SearchAlgorithm getRunningAlgorithm() {
+        return runningAlgorithm;
+    }
+
     private static final int centerX = Settings.WINDOW_WID / 2 - Settings.CENTER_OFFSET;
 
     private MenuConstructor algorithmsMenu;
     private SearchAlgorithm currentAlgorithm = SearchAlgorithm.BreadthFirst;
-    private final ISearchAlgorithm[] searchAlgorithms = {new Bidirectional(), new BreadthFirst(), new Greedy()};
+    private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy() };
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final DrawGrid drawGrid;
 
@@ -44,13 +54,21 @@ public class ContentButtons extends JPanel {
             if (matching.isEmpty()) {
                 throw new IllegalStateException();
             }
-            matching.get().start(drawGrid.startPiece, drawGrid.endPiece, drawGrid.gridPieces, drawGrid, Settings.VISUALIZE_SPEED);
+            runningAlgorithm = SearchAlgorithm.BreadthFirst;
+
+            executor.submit(() -> {
+                matching.get().start(drawGrid.startPiece, drawGrid.endPiece, drawGrid.gridPieces, drawGrid, Settings.VISUALIZE_SPEED, ContentButtons::getRunningAlgorithm);
+            });
         });
         add(button);
 
         button = new JButton("Clear Board");
         button.setBounds(centerX + (Settings.BUTTON_WID / 2) + Settings.BUTTON_MARGIN, 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
-        button.addActionListener(_ -> drawGrid.clearBoard());
+        button.addActionListener(_ -> {
+            runningAlgorithm = null;
+
+            drawGrid.clearBoard();
+        });
         add(button);
 
         button = new JButton("Clear Path");

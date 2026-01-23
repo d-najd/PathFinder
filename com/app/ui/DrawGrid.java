@@ -16,7 +16,6 @@ public class DrawGrid extends JPanel {
     protected ArrayList<ArrayList<Piece>> gridPieces = new ArrayList<>();
     protected Piece startPiece;
     protected Piece endPiece;
-    public int visualize_speed = 0;
 
     private boolean gridDrawn = false;
 
@@ -41,11 +40,13 @@ public class DrawGrid extends JPanel {
             }
             pieceForRepainting.clear();
             //wait some time so it doesn't go tooo fast
+            /*
             try {
                 Thread.sleep(visualize_speed);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+             */
         } else if (!gridDrawn) {
             drawGrid((Graphics2D) g);
             gridDrawn = true;
@@ -94,6 +95,7 @@ public class DrawGrid extends JPanel {
         new GridListeners(gridPieces, this);
     }
 
+    @SuppressWarnings("BusyWait")
     public void drawShortestPath(ArrayList<QueuePiece> path) {
         for (int i = 1; i < path.size(); i++) {
             QueuePiece curPiece = path.get(i);
@@ -111,8 +113,6 @@ public class DrawGrid extends JPanel {
     }
 
     protected void clearBoard() {
-        visualize_speed = 0;
-
         for (ArrayList<Piece> colPieceArr : gridPieces) {
             for (Piece curPiece : colPieceArr)
                 if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath || curPiece.getType() == Piece.Type.Wall)
@@ -121,12 +121,9 @@ public class DrawGrid extends JPanel {
         }
         paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
                 Settings.GRID_HEI * Settings.RECT_WID);
-
     }
 
     protected void clearPath() {
-        visualize_speed = 0;
-
         for (ArrayList<Piece> colPieceArr : gridPieces) {
             for (Piece curPiece : colPieceArr)
                 if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
