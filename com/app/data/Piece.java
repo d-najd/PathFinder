@@ -1,4 +1,4 @@
-package com.app.Objects;
+package com.app.data;
 
 import com.app.Settings;
 

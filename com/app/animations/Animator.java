@@ -1,4 +1,4 @@
-package com.app.Animations;
+package com.app.animations;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Animator {
     public int animationLength = 500; //default animation length is 500mil

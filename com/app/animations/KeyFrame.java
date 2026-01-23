@@ -1,4 +1,4 @@
-package com.app.Animations;
+package com.app.animations;
 
 import java.awt.*;
 

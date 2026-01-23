@@ -1,7 +1,7 @@
 package com.app.ui;
 
-import com.app.Objects.Piece;
-import com.app.Objects.QueuePiece;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
 import com.app.Settings;
 
 import javax.swing.*;

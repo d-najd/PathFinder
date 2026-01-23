@@ -1,8 +1,8 @@
-package com.app.Algorithms;
+package com.app.algorithms;
 
 import com.app.ui.DrawGrid;
-import com.app.Objects.Piece;
-import com.app.Objects.QueuePiece;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
 
 import java.util.*;
 

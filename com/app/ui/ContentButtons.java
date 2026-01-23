@@ -1,6 +1,6 @@
 package com.app.ui;
 
-import com.app.Algorithms.*;
+import com.app.algorithms.*;
 import com.app.Settings;
 
 import javax.swing.*;

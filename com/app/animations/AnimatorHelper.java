@@ -1,6 +1,6 @@
-package com.app.Animations;
+package com.app.animations;
 
-import com.app.Objects.Piece;
+import com.app.data.Piece;
 import com.app.Settings;
 
 import java.awt.*;

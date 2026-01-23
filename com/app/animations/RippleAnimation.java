@@ -1,8 +1,7 @@
-package com.app.Animations;
+package com.app.animations;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class RippleAnimation {
     private static Animator inputAnim;
