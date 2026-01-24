@@ -89,6 +89,12 @@ public class Greedy implements ISearchAlgorithm {
                     cPieceY * gridObj.getRectHei(), gridObj.getRectWid(),
                     gridObj.getRectHei());
 
+            try {
+                //noinspection BusyWait
+                Thread.sleep(visualizeSpeed);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         System.out.println("no route possible");

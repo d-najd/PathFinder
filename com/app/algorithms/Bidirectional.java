@@ -30,6 +30,7 @@ public class Bidirectional implements ISearchAlgorithm {
             List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
 
             QueuePiece curr = q.poll(); //poll or remove. Same thing
+            assert curr != null;
             int curX = curr.getX();
             int curY = curr.getY();
             for (int i = 0; i < 4; i++) //for each direction
@@ -56,6 +57,12 @@ public class Bidirectional implements ISearchAlgorithm {
                         gridObj.repaint(temp.getX() * gridObj.getRectWid(),
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(visualizeSpeed);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
                             Piece.Type.End) || (curr.getStartType() == Piece.Type.End &
                             tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) { //Destination found and top tier italiano spaghetti here
@@ -65,8 +72,8 @@ public class Bidirectional implements ISearchAlgorithm {
                             if (qe.getX() == xc && qe.getY() == yc) {
                                 ArrayList<QueuePiece> path = new ArrayList<>(qe.getPath());
                                 Collections.reverse(path);
-                                path.add(0, new QueuePiece(-1, -1)); //my italian spaghetti forced me to do this
-                                path.remove(path.size() - 1);
+                                path.addFirst(new QueuePiece(-1, -1)); //my italian spaghetti forced me to do this
+                                path.removeLast();
                                 gridObj.drawShortestPath(path);
                                 success = true;
                                 break;
