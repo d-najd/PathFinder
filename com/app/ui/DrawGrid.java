@@ -11,6 +11,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,7 +25,7 @@ public class DrawGrid extends JPanel {
     private boolean gridDrawn = false;
 
     private Piece wasPreviousPieceUnique; //by unique it means start or end position, because when you hold the left click and move the mouse the start position has to move with it
-    public ArrayList<Piece> piecesForRepainting = new ArrayList<>();
+    public List<Piece> piecesForRepainting = new CopyOnWriteArrayList<>();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -34,15 +37,18 @@ public class DrawGrid extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (!piecesForRepainting.isEmpty()) {
+        var piecesCopy = piecesForRepainting.stream().toList();
+        piecesForRepainting.removeAll(piecesCopy);
+
+        if (!piecesCopy.isEmpty()) {
             Graphics2D g2d = (Graphics2D) g;
-            for (Piece curPiece : piecesForRepainting) {
+            for (Piece curPiece : piecesCopy) {
                 g2d.setColor(curPiece.getColor());
                 g2d.fill(curPiece.getRect());
                 g2d.setColor(Color.black);
                 g2d.draw(curPiece.getRect());
             }
-            piecesForRepainting.clear();
+            // piecesCopy.clear();
             //wait some time so it doesn't go tooo fast
             /*
             try {

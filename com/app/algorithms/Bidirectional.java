@@ -27,9 +27,9 @@ public class Bidirectional implements ISearchAlgorithm {
         q.add(start);
 
         while (q.peek() != null) {
-            List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
+            List<QueuePiece> previous = List.copyOf(q.peek().getPath());
 
-            QueuePiece curr = q.poll(); //poll or remove. Same thing
+            QueuePiece curr = q.poll();
             assert curr != null;
             int curX = curr.getX();
             int curY = curr.getY();
@@ -37,24 +37,21 @@ public class Bidirectional implements ISearchAlgorithm {
             {
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
                         (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    //Checked if x and y are correct. ALL IN 1 GO
-                    int xc = curX + dx[i];//Setting current x coordinate
-                    int yc = curY + dy[i];//Setting current y coordinate
-                    var type = grid.get(xc).get(yc).getType();//type of current field
+                    int xc = curX + dx[i];
+                    int yc = curY + dy[i];
+                    var type = grid.get(xc).get(yc).getType();
                     Piece tempPiece = grid.get(xc).get(yc);
 
-                    if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
+                    if (type == Piece.Type.Empty)
                     {
                         tempPiece.setStartType(curr.getStartType());
-                        tempPiece.setType(Piece.Type.Checked);//now BLOCKED
+                        tempPiece.setType(Piece.Type.Checked);
                         QueuePiece temp = new QueuePiece(xc, yc);
                         temp.addParent(new ArrayList<>(previous), temp);
                         temp.setStartType(curr.getStartType());
-                        q.add(temp);//Adding current coordinates to the queue
+                        q.add(temp);
 
-                        //paint the piece
-                        gridObj.piecesForRepainting.add(grid.get(xc).get(yc));
-                        gridObj.repaint(temp.getX() * gridObj.getRectWid(),
+                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
                         try {
@@ -65,14 +62,14 @@ public class Bidirectional implements ISearchAlgorithm {
                         }
                     } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
                             Piece.Type.End) || (curr.getStartType() == Piece.Type.End &
-                            tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) { //Destination found and top tier italiano spaghetti here
+                            tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) {
                         gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         boolean success = false;
                         for (QueuePiece qe : q) {
                             if (qe.getX() == xc && qe.getY() == yc) {
                                 ArrayList<QueuePiece> path = new ArrayList<>(qe.getPath());
                                 Collections.reverse(path);
-                                path.addFirst(new QueuePiece(-1, -1)); //my italian spaghetti forced me to do this
+                                path.addFirst(new QueuePiece(-1, -1));
                                 path.removeLast();
                                 gridObj.drawShortestPath(path);
                                 success = true;

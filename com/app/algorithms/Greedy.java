@@ -40,9 +40,9 @@ public class Greedy implements ISearchAlgorithm {
             Integer o2d = o2.getDistance();
             return o1d.compareTo(o2d);
         });
-        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), calDis(startPiece.getX(), startPiece.getY())); //Start piece
+        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), calDis(startPiece.getX(), startPiece.getY()));
         start.addParent(new ArrayList<>(), start);
-        q.add(start);//Adding start to the queue since we're already visiting it
+        q.add(start);
 
         while (!q.isEmpty()) {
             List<QueuePiece> previous_ = Collections.unmodifiableList(q.peek().getPath());
@@ -52,40 +52,36 @@ public class Greedy implements ISearchAlgorithm {
             int curX = curr.getX();
             int curY = curr.getY();
 
-            for (int i = 0; i < 4; i++) { //for each direction
+            for (int i = 0; i < 4; i++) {
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
                         (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    //Checked if x and y are correct. ALL IN 1 GO
-                    int xc = curX + dx[i];//Setting current x coordinate
-                    int yc = curY + dy[i];//Setting current y coordinate
-                    var type = grid.get(xc).get(yc).getType();//type of current field
+                    int xc = curX + dx[i];
+                    int yc = curY + dy[i];
+                    var type = grid.get(xc).get(yc).getType();
 
-                    if (type == Piece.Type.Empty)//add the piece to the list for it to be processed later
+                    if (type == Piece.Type.Empty)
                     {
                         QueuePiece temp = new QueuePiece(xc, yc, calDis(xc, yc));
                         temp.addParent(new ArrayList<>(previous_), temp);
 
                         //prevents adding the same piece to the list thus preventing a memory leak and LOTS of unnecessary calculations
                         if (q.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
-                            q.add(temp);//Adding current coordinates to the queue
+                            q.add(temp);
 
-                    } else if (type == Piece.Type.End) { //Destination found
+                    } else if (type == Piece.Type.End) {
                         gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         return;
                     }
                 }
             }
 
-            //move to the closest piece
-            QueuePiece cPiece = q.peek(); //closest piece to the end
+            QueuePiece cPiece = q.peek();
             assert cPiece != null;
             int cPieceX = cPiece.getX();
             int cPieceY = cPiece.getY();
-            grid.get(cPieceX).get(cPieceY).setType(Piece.Type.Checked);//now BLOCKED
+            grid.get(cPieceX).get(cPieceY).setType(Piece.Type.Checked);
 
-            //paint the piece
-            gridObj.piecesForRepainting.add(grid.get(cPieceX).get(cPieceY));
-            gridObj.repaint(cPieceX * gridObj.getRectWid(),
+            gridObj.paintImmediately(cPieceX * gridObj.getRectWid(),
                     cPieceY * gridObj.getRectHei(), gridObj.getRectWid(),
                     gridObj.getRectHei());
 
@@ -104,5 +100,3 @@ public class Greedy implements ISearchAlgorithm {
         return Math.abs(x - endX) + Math.abs(y - endY);
     }
 }
-
-

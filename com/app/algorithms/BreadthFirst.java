@@ -31,10 +31,10 @@ public class BreadthFirst implements ISearchAlgorithm {
 
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
         Queue<QueuePiece> q = new LinkedList<>();
-        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY()); //Start piece
+        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
         start.addParent(new ArrayList<>(), start);
 
-        q.add(start);//Adding start to the queue since we're already visiting it
+        q.add(start);
 
         while (q.peek() != null) {
             var previous = List.copyOf(q.peek().getPath());
@@ -43,17 +43,17 @@ public class BreadthFirst implements ISearchAlgorithm {
             assert curr != null;
             int curX = curr.getX();
             int curY = curr.getY();
-            for (int i = 0; i < 4; i++)//for each direction
+            for (int i = 0; i < 4; i++)
             {
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
                         (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    int xc = curX + dx[i];//Setting current x coordinate
-                    int yc = curY + dy[i];//Setting current y coordinate
-                    var type = grid.get(xc).get(yc).getType();//type of current field
+                    int xc = curX + dx[i];
+                    int yc = curY + dy[i];
+                    var type = grid.get(xc).get(yc).getType();
 
-                    if (type == Piece.Type.Empty)//Movable. Can't return here again so setting it to 'Blocked' now
+                    if (type == Piece.Type.Empty)
                     {
-                        grid.get(xc).get(yc).setType(Piece.Type.Checked);//now BLOCKED
+                        grid.get(xc).get(yc).setType(Piece.Type.Checked);
                         QueuePiece temp = new QueuePiece(xc, yc);
                         temp.addParent(new ArrayList<>(previous), temp);
                         q.add(temp);
@@ -62,16 +62,14 @@ public class BreadthFirst implements ISearchAlgorithm {
                             return;
                         }
 
-                        gridObj.piecesForRepainting.add(grid.get(xc).get(yc));
-                        gridObj.repaint(temp.getX() * gridObj.getRectWid(), temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
-
+                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(), temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
                         try {
                             //noinspection BusyWait
                             Thread.sleep(visualizeSpeed);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                    } else if (type == Piece.Type.End) { //Destination found
+                    } else if (type == Piece.Type.End) {
                         gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         return;
                     }
