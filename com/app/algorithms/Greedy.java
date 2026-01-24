@@ -84,8 +84,8 @@ public class Greedy implements ISearchAlgorithm {
             grid.get(cPieceX).get(cPieceY).setType(Piece.Type.Checked);//now BLOCKED
 
             //paint the piece
-            gridObj.pieceForRepainting.add(grid.get(cPieceX).get(cPieceY));
-            gridObj.paintImmediately(cPieceX * gridObj.getRectWid(),
+            gridObj.piecesForRepainting.add(grid.get(cPieceX).get(cPieceY));
+            gridObj.repaint(cPieceX * gridObj.getRectWid(),
                     cPieceY * gridObj.getRectHei(), gridObj.getRectWid(),
                     gridObj.getRectHei());
 

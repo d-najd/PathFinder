@@ -4,10 +4,8 @@ import com.app.data.Piece;
 import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import javax.swing.*;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class BreadthFirst implements ISearchAlgorithm {
@@ -39,9 +37,9 @@ public class BreadthFirst implements ISearchAlgorithm {
         q.add(start);//Adding start to the queue since we're already visiting it
 
         while (q.peek() != null) {
-            List<QueuePiece> previous = List.copyOf(q.peek().getPath()); //immutable and NO YOU CAN'T MAKE THIS MUTABLE IT WILL BREAK ANYTHING
+            var previous = List.copyOf(q.peek().getPath());
 
-            QueuePiece curr = q.poll();//poll or remove. Same thing
+            var curr = q.poll();
             assert curr != null;
             int curX = curr.getX();
             int curY = curr.getY();
@@ -49,7 +47,6 @@ public class BreadthFirst implements ISearchAlgorithm {
             {
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
                         (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    //Checked if x and y are correct. ALL IN 1 GO
                     int xc = curX + dx[i];//Setting current x coordinate
                     int yc = curY + dy[i];//Setting current y coordinate
                     var type = grid.get(xc).get(yc).getType();//type of current field
@@ -59,17 +56,14 @@ public class BreadthFirst implements ISearchAlgorithm {
                         grid.get(xc).get(yc).setType(Piece.Type.Checked);//now BLOCKED
                         QueuePiece temp = new QueuePiece(xc, yc);
                         temp.addParent(new ArrayList<>(previous), temp);
-                        q.add(temp);//Adding current coordinates to the queue
-
-                        //paint the piece
+                        q.add(temp);
 
                         if (currentAlgorithm.get() != currentAlgorithm()) {
                             return;
                         }
 
-                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
-                                temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-                                gridObj.getRectHei());
+                        gridObj.piecesForRepainting.add(grid.get(xc).get(yc));
+                        gridObj.repaint(temp.getX() * gridObj.getRectWid(), temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
 
                         try {
                             //noinspection BusyWait

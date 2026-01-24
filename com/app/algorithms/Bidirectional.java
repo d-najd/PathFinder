@@ -52,8 +52,8 @@ public class Bidirectional implements ISearchAlgorithm {
                         q.add(temp);//Adding current coordinates to the queue
 
                         //paint the piece
-                        gridObj.pieceForRepainting.add(grid.get(xc).get(yc));
-                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
+                        gridObj.piecesForRepainting.add(grid.get(xc).get(yc));
+                        gridObj.repaint(temp.getX() * gridObj.getRectWid(),
                                 temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
                     } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
