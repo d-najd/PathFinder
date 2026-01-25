@@ -20,15 +20,13 @@ public class Bidirectional implements ISearchAlgorithm {
         Queue<QueuePiece> q = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), Piece.Type.Start);
         QueuePiece end = new QueuePiece(endPiece.getX(), endPiece.getY(), Piece.Type.End);
-        start.addParent(new ArrayList<>(), start);
-        end.addParent(new ArrayList<>(), end);
+        start.addParent(start, start);
+        end.addParent(end, end);
 
         q.add(end);
         q.add(start);
 
         while (q.peek() != null) {
-            List<QueuePiece> previous = List.copyOf(q.peek().getPath());
-
             QueuePiece curr = q.poll();
             assert curr != null;
             int curX = curr.getX();
@@ -42,12 +40,11 @@ public class Bidirectional implements ISearchAlgorithm {
                     var type = grid.get(xc).get(yc).getType();
                     Piece tempPiece = grid.get(xc).get(yc);
 
-                    if (type == Piece.Type.Empty)
-                    {
+                    if (type == Piece.Type.Empty) {
                         tempPiece.setStartType(curr.getStartType());
                         tempPiece.setType(Piece.Type.Checked);
                         QueuePiece temp = new QueuePiece(xc, yc);
-                        temp.addParent(new ArrayList<>(previous), temp);
+                        temp.addParent(curr, temp);
                         temp.setStartType(curr.getStartType());
                         q.add(temp);
 
@@ -60,26 +57,23 @@ public class Bidirectional implements ISearchAlgorithm {
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                    } else if (((curr.getStartType() == Piece.Type.Start && tempPiece.getStartType() ==
-                            Piece.Type.End) || (curr.getStartType() == Piece.Type.End &
-                            tempPiece.getStartType() == Piece.Type.Start)) && type == Piece.Type.Checked) {
-                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
-                        boolean success = false;
-                        for (QueuePiece qe : q) {
-                            if (qe.getX() == xc && qe.getY() == yc) {
-                                ArrayList<QueuePiece> path = new ArrayList<>(qe.getPath());
-                                Collections.reverse(path);
-                                path.addFirst(new QueuePiece(-1, -1));
-                                path.removeLast();
-                                gridObj.drawShortestPath(path);
-                                success = true;
-                                break;
-                            }
+                    } else if (type == Piece.Type.Checked) {
+                        var checkedWith = q.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
+
+                        if (checkedWith == null) {
+                            continue;
                         }
-                        if (!success) {
-                            System.out.println("can't find the tempiece and only half the shortest path will be drawn");
+
+                        if ((curr.getStartType() == Piece.Type.Start && checkedWith.getStartType() == Piece.Type.End) ||
+                                (curr.getStartType() == Piece.Type.End && checkedWith.getStartType() == Piece.Type.Start)) {
+                            gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
+                            ArrayList<QueuePiece> path = new ArrayList<>(checkedWith.getPath());
+                            Collections.reverse(path);
+                            path.addFirst(new QueuePiece(-1, -1));
+                            path.removeLast();
+                            gridObj.drawShortestPath(path);
+                            return;
                         }
-                        return;
                     }
                 }
             }

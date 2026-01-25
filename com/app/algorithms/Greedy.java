@@ -35,18 +35,12 @@ public class Greedy implements ISearchAlgorithm {
         endX = endPiece.getX();
         endY = endPiece.getY();
 
-        Queue<QueuePiece> q = new PriorityQueue<>((o1, o2) -> {
-            Integer o1d = o1.getDistance();
-            Integer o2d = o2.getDistance();
-            return o1d.compareTo(o2d);
-        });
-        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), calDis(startPiece.getX(), startPiece.getY()));
-        start.addParent(new ArrayList<>(), start);
+        Queue<QueuePiece> q = new PriorityQueue<>(Comparator.comparing(Greedy::calculateDistanceFromEnd));
+        QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
+        start.addParent(start, start);
         q.add(start);
 
         while (!q.isEmpty()) {
-            List<QueuePiece> previous_ = Collections.unmodifiableList(q.peek().getPath());
-
             QueuePiece curr = q.poll();
             assert curr != null;
             int curX = curr.getX();
@@ -61,8 +55,8 @@ public class Greedy implements ISearchAlgorithm {
 
                     if (type == Piece.Type.Empty)
                     {
-                        QueuePiece temp = new QueuePiece(xc, yc, calDis(xc, yc));
-                        temp.addParent(new ArrayList<>(previous_), temp);
+                        QueuePiece temp = new QueuePiece(xc, yc);
+                        temp.addParent(curr, temp);
 
                         //prevents adding the same piece to the list thus preventing a memory leak and LOTS of unnecessary calculations
                         if (q.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
@@ -96,7 +90,7 @@ public class Greedy implements ISearchAlgorithm {
         System.out.println("no route possible");
     }
 
-    private static int calDis(int x, int y) { //calculate distance from current piece to end piece
-        return Math.abs(x - endX) + Math.abs(y - endY);
+    private static Integer calculateDistanceFromEnd(QueuePiece piece) {
+        return Math.abs(piece.getX() - endX) + Math.abs(piece.getY() - endY);
     }
 }

@@ -32,13 +32,11 @@ public class BreadthFirst implements ISearchAlgorithm {
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
         Queue<QueuePiece> q = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
-        start.addParent(new ArrayList<>(), start);
+        start.addParent(start, start);
 
         q.add(start);
 
         while (q.peek() != null) {
-            var previous = List.copyOf(q.peek().getPath());
-
             var curr = q.poll();
             assert curr != null;
             int curX = curr.getX();
@@ -55,7 +53,7 @@ public class BreadthFirst implements ISearchAlgorithm {
                     {
                         grid.get(xc).get(yc).setType(Piece.Type.Checked);
                         QueuePiece temp = new QueuePiece(xc, yc);
-                        temp.addParent(new ArrayList<>(previous), temp);
+                        temp.addParent(curr, temp);
                         q.add(temp);
 
                         if (currentAlgorithm.get() != currentAlgorithm()) {

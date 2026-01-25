@@ -6,10 +6,12 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 public class Piece {
-    private int x = 0;
-    private int y = 0;
-    private Type type = Type.Empty;
-    private Type startType;
+    protected int x = 0;
+    protected int y = 0;
+    protected Type type = Type.Empty;
+    //the piece type that the piece starts from, if the algorithm is bidirectional it will
+    // have 2 start types (start piece and end piece)
+    protected Type startType;
 
     public Piece(int x, int y) {
         this.x = x;
