@@ -43,17 +43,14 @@ public class BreadthFirst implements ISearchAlgorithm {
                     return;
                 }
 
-                var xc = dequeuedPiece.getX() + SearchAlgorithmHelper.dx[i];
-                var yc = dequeuedPiece.getY() + SearchAlgorithmHelper.dy[i];
-
-                if (xc < 0 || xc >= grid.size() || yc < 0 || yc >= grid.getFirst().size()) {
+                var checkedPiece = SearchAlgorithmHelper.getPieceByIndex(grid, dequeuedPiece, i);
+                if (checkedPiece == null) {
                     continue;
                 }
 
-                var checkedPiece = grid.get(xc).get(yc);
                 if (checkedPiece.getType() == Piece.Type.Empty) {
                     checkedPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    QueuePiece checkedQueuePiece = new QueuePiece(checkedPiece);
                     checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
                     queue.add(checkedQueuePiece);
 

@@ -6,6 +6,13 @@ import java.util.List;
 public class QueuePiece extends Piece {
     private List<QueuePiece> visitedPieces = new ArrayList<>();
 
+    /**
+     * Only puts x and y pos
+     */
+    public QueuePiece(Piece piece) {
+        super(piece.getX(), piece.getY());
+    }
+
     public QueuePiece(int x, int y) {
         super(x, y);
         addParent(this, this);

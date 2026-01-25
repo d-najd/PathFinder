@@ -34,19 +34,15 @@ public class Bidirectional implements ISearchAlgorithm {
                     return;
                 }
 
-                var xc = dequeuedPiece.getX() + SearchAlgorithmHelper.dx[i];
-                var yc = dequeuedPiece.getY() + SearchAlgorithmHelper.dy[i];
-
-                if (xc < 0 || xc >= grid.size() || yc < 0 || yc >= grid.getFirst().size()) {
+                var checkedPiece = SearchAlgorithmHelper.getPieceByIndex(grid, dequeuedPiece, i);
+                if (checkedPiece == null) {
                     continue;
                 }
-
-                Piece checkedPiece = grid.get(xc).get(yc);
 
                 if (checkedPiece.getType() == Piece.Type.Empty) {
                     checkedPiece.setStartType(dequeuedPiece.getStartType());
                     checkedPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    QueuePiece checkedQueuePiece = new QueuePiece(checkedPiece);
                     checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
                     checkedQueuePiece.setStartType(dequeuedPiece.getStartType());
                     queue.add(checkedQueuePiece);
@@ -61,8 +57,7 @@ public class Bidirectional implements ISearchAlgorithm {
                         throw new RuntimeException(e);
                     }
                 } else if (checkedPiece.getType() == Piece.Type.Checked) {
-                    var checkedQueuePiece = queue.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
-
+                    var checkedQueuePiece = queue.stream().filter(o -> (o.getX() == checkedPiece.getX()) && (o.getY() == checkedPiece.getY())).findAny().orElse(null);
                     if (checkedQueuePiece == null) {
                         continue;
                     }
