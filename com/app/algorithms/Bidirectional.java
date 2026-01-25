@@ -44,18 +44,18 @@ public class Bidirectional implements ISearchAlgorithm {
                     continue;
                 }
 
-                Piece checkedAgainstPiece = grid.get(xc).get(yc);
+                Piece checkedPiece = grid.get(xc).get(yc);
 
-                if (checkedAgainstPiece.getType() == Piece.Type.Empty) {
-                    checkedAgainstPiece.setStartType(dequeuedPiece.getStartType());
-                    checkedAgainstPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedAgainstQueuePiece = new QueuePiece(xc, yc);
-                    checkedAgainstQueuePiece.addParent(dequeuedPiece, checkedAgainstQueuePiece);
-                    checkedAgainstQueuePiece.setStartType(dequeuedPiece.getStartType());
-                    queue.add(checkedAgainstQueuePiece);
+                if (checkedPiece.getType() == Piece.Type.Empty) {
+                    checkedPiece.setStartType(dequeuedPiece.getStartType());
+                    checkedPiece.setType(Piece.Type.Checked);
+                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                    checkedQueuePiece.setStartType(dequeuedPiece.getStartType());
+                    queue.add(checkedQueuePiece);
 
-                    gridObj.paintImmediately(checkedAgainstQueuePiece.getX() * gridObj.getRectWid(),
-                            checkedAgainstQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+                    gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
+                            checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                             gridObj.getRectHei());
                     try {
                         //noinspection BusyWait
@@ -63,19 +63,19 @@ public class Bidirectional implements ISearchAlgorithm {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                } else if (checkedAgainstPiece.getType() == Piece.Type.Checked) {
-                    var checkedWith = queue.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
+                } else if (checkedPiece.getType() == Piece.Type.Checked) {
+                    var checkedQueuePiece = queue.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
 
-                    if (checkedWith == null) {
+                    if (checkedQueuePiece == null) {
                         continue;
                     }
 
-                    if (dequeuedPiece.getStartType() == checkedWith.getStartType()) {
+                    if (dequeuedPiece.getStartType() == checkedQueuePiece.getStartType()) {
                         continue;
                     }
 
                     gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
-                    ArrayList<QueuePiece> path = new ArrayList<>(checkedWith.getPath());
+                    ArrayList<QueuePiece> path = new ArrayList<>(checkedQueuePiece.getPath());
                     Collections.reverse(path);
                     path.addFirst(new QueuePiece(-1, -1));
                     path.removeLast();

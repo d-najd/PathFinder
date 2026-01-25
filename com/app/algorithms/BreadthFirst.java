@@ -51,21 +51,21 @@ public class BreadthFirst implements ISearchAlgorithm {
                     continue;
                 }
 
-                var checkedAgainstPiece = grid.get(xc).get(yc);
-                if (checkedAgainstPiece.getType() == Piece.Type.Empty) {
-                    checkedAgainstPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedAgainstQueuePiece = new QueuePiece(xc, yc);
-                    checkedAgainstQueuePiece.addParent(dequeuedPiece, checkedAgainstQueuePiece);
-                    queue.add(checkedAgainstQueuePiece);
+                var checkedPiece = grid.get(xc).get(yc);
+                if (checkedPiece.getType() == Piece.Type.Empty) {
+                    checkedPiece.setType(Piece.Type.Checked);
+                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                    queue.add(checkedQueuePiece);
 
-                    gridObj.paintImmediately(checkedAgainstQueuePiece.getX() * gridObj.getRectWid(), checkedAgainstQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+                    gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(), checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
                     try {
                         //noinspection BusyWait
                         Thread.sleep(Settings.VISUALIZE_SPEED);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                } else if (checkedAgainstPiece.getType() == Piece.Type.End) {
+                } else if (checkedPiece.getType() == Piece.Type.End) {
                     gridObj.drawShortestPath(dequeuedPiece.getPath());
                     return;
                 }

@@ -44,11 +44,11 @@ public class DepthFirst implements ISearchAlgorithm {
 
                 if (checkedPiece.getType() == Piece.Type.Empty) {
                     checkedPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedAgainstPiece = new QueuePiece(xc, yc);
-                    checkedAgainstPiece.addParent(dequeuedPiece, checkedAgainstPiece);
-                    stack.add(checkedAgainstPiece);
+                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                    stack.add(checkedQueuePiece);
 
-                    gridObj.paintImmediately(checkedAgainstPiece.getX() * gridObj.getRectWid(), checkedAgainstPiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+                    gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(), checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
                     try {
                         //noinspection BusyWait
                         Thread.sleep(Settings.VISUALIZE_SPEED);
