@@ -36,12 +36,12 @@ public class Greedy implements ISearchAlgorithm {
         endX = endPiece.getX();
         endY = endPiece.getY();
 
-        Queue<QueuePiece> q = new PriorityQueue<>(Comparator.comparing(Greedy::calculateDistanceFromEnd));
+        Queue<QueuePiece> queue = new PriorityQueue<>(Comparator.comparing(Greedy::calculateDistanceFromEnd));
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
-        q.add(start);
+        queue.add(start);
 
-        while (!q.isEmpty()) {
-            QueuePiece curr = q.poll();
+        while (!queue.isEmpty()) {
+            QueuePiece curr = queue.poll();
             assert curr != null;
             int curX = curr.getX();
             int curY = curr.getY();
@@ -51,20 +51,21 @@ public class Greedy implements ISearchAlgorithm {
                     return;
                 }
 
-                if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
-                        (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    int xc = curX + dx[i];
-                    int yc = curY + dy[i];
+                int xc = curX + dx[i];
+                int yc = curY + dy[i];
+
+                if ((xc >= 0 && xc < grid.size()) &&
+                        (yc >= 0 && yc < grid.getFirst().size())) {
                     var type = grid.get(xc).get(yc).getType();
 
                     if (type == Piece.Type.Empty)
                     {
-                        QueuePiece temp = new QueuePiece(xc, yc);
-                        temp.addParent(curr, temp);
+                        QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                        checkedQueuePiece.addParent(curr, checkedQueuePiece);
 
                         //prevents adding the same piece to the list thus preventing a memory leak and LOTS of unnecessary calculations
-                        if (q.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
-                            q.add(temp);
+                        if (queue.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
+                            queue.add(checkedQueuePiece);
 
                     } else if (type == Piece.Type.End) {
                         gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
@@ -73,14 +74,13 @@ public class Greedy implements ISearchAlgorithm {
                 }
             }
 
-            QueuePiece cPiece = q.peek();
-            assert cPiece != null;
-            int cPieceX = cPiece.getX();
-            int cPieceY = cPiece.getY();
-            grid.get(cPieceX).get(cPieceY).setType(Piece.Type.Checked);
+            var checkedQueuePiece = queue.peek();
+            assert checkedQueuePiece != null;
+            var checkedPiece = grid.get(checkedQueuePiece.getX()).get(checkedQueuePiece.getY());
+            checkedPiece.setType(Piece.Type.Checked);
 
-            gridObj.paintImmediately(cPieceX * gridObj.getRectWid(),
-                    cPieceY * gridObj.getRectHei(), gridObj.getRectWid(),
+            gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
+                    checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                     gridObj.getRectHei());
 
             try {

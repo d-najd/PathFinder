@@ -28,37 +28,37 @@ public class DepthFirst implements ISearchAlgorithm {
         while (stack.peek() != null) {
             var dequeuedPiece = stack.pop();
             assert dequeuedPiece != null;
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 if (currentAlgorithm.get() != currentAlgorithm()) {
                     return;
                 }
 
-                if ((dequeuedPiece.getX() + dx[i] >= 0 && dequeuedPiece.getX() + dx[i] < grid.size()) &&
-                        (dequeuedPiece.getY() + dy[i] >= 0 && dequeuedPiece.getY() + dy[i] < grid.getFirst().size())) {
-                    int xc = dequeuedPiece.getX() + dx[i];
-                    int yc = dequeuedPiece.getY() + dy[i];
-                    var type = grid.get(xc).get(yc).getType();
+                int xc = dequeuedPiece.getX() + dx[i];
+                int yc = dequeuedPiece.getY() + dy[i];
 
-                    if (type == Piece.Type.Empty)
-                    {
-                        grid.get(xc).get(yc).setType(Piece.Type.Checked);
-                        QueuePiece checkedAgainstPiece = new QueuePiece(xc, yc);
-                        checkedAgainstPiece.addParent(dequeuedPiece, checkedAgainstPiece);
-                        stack.add(checkedAgainstPiece);
+                if (xc < 0 || xc >= grid.size() || yc < 0 || yc >= grid.getFirst().size()) {
+                    continue;
+                }
 
-                        gridObj.paintImmediately(checkedAgainstPiece.getX() * gridObj.getRectWid(), checkedAgainstPiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
-                        try {
-                            //noinspection BusyWait
-                            Thread.sleep(Settings.VISUALIZE_SPEED);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
-                    } else if (type == Piece.Type.End) {
-                        gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
-                        return;
+                var checkedPiece = grid.get(xc).get(yc);
+
+                if (checkedPiece.getType() == Piece.Type.Empty) {
+                    checkedPiece.setType(Piece.Type.Checked);
+                    QueuePiece checkedAgainstPiece = new QueuePiece(xc, yc);
+                    checkedAgainstPiece.addParent(dequeuedPiece, checkedAgainstPiece);
+                    stack.add(checkedAgainstPiece);
+
+                    gridObj.paintImmediately(checkedAgainstPiece.getX() * gridObj.getRectWid(), checkedAgainstPiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+                    try {
+                        //noinspection BusyWait
+                        Thread.sleep(Settings.VISUALIZE_SPEED);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
+                    break;
+                } else if (checkedPiece.getType() == Piece.Type.End) {
+                    gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
+                    return;
                 }
             }
         }
