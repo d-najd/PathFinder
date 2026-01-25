@@ -1,5 +1,6 @@
 package com.app.algorithms;
 
+import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
@@ -18,7 +19,7 @@ public class DepthFirst implements ISearchAlgorithm {
     }
 
     @Override
-    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Stack<QueuePiece> stack = new Stack<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
         start.addParent(start, start);
@@ -50,7 +51,7 @@ public class DepthFirst implements ISearchAlgorithm {
                         gridObj.paintImmediately(checkedAgainstPiece.getX() * gridObj.getRectWid(), checkedAgainstPiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
                         try {
                             //noinspection BusyWait
-                            Thread.sleep(visualizeSpeed);
+                            Thread.sleep(Settings.VISUALIZE_SPEED);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }

@@ -1,5 +1,6 @@
 package com.app.algorithms;
 
+import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
@@ -31,7 +32,7 @@ public class Greedy implements ISearchAlgorithm {
         return SearchAlgorithm.Greedy;
     }
 
-    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         endX = endPiece.getX();
         endY = endPiece.getY();
 
@@ -85,7 +86,7 @@ public class Greedy implements ISearchAlgorithm {
 
             try {
                 //noinspection BusyWait
-                Thread.sleep(visualizeSpeed);
+                Thread.sleep(Settings.VISUALIZE_SPEED);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

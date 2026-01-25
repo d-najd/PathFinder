@@ -57,7 +57,7 @@ public class ContentButtons extends JPanel {
             runningAlgorithm = selectedAlgorithm;
 
             executor.submit(() -> {
-                matching.get().start(drawGrid.startPiece, drawGrid.endPiece, drawGrid.gridPieces, drawGrid, Settings.VISUALIZE_SPEED, ContentButtons::getRunningAlgorithm);
+                matching.get().start(drawGrid.startPiece, drawGrid.endPiece, drawGrid.gridPieces, drawGrid, ContentButtons::getRunningAlgorithm);
             });
         });
         add(button);

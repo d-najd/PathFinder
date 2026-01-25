@@ -1,5 +1,6 @@
 package com.app.algorithms;
 
+import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
@@ -16,7 +17,7 @@ public class Bidirectional implements ISearchAlgorithm {
         return SearchAlgorithm.Bidirectional;
     }
 
-    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, int visualizeSpeed, Supplier<SearchAlgorithm> currentAlgorithm) {
+    public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Queue<QueuePiece> q = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), Piece.Type.Start);
         QueuePiece end = new QueuePiece(endPiece.getX(), endPiece.getY(), Piece.Type.End);
@@ -56,7 +57,7 @@ public class Bidirectional implements ISearchAlgorithm {
                                 gridObj.getRectHei());
                         try {
                             //noinspection BusyWait
-                            Thread.sleep(visualizeSpeed);
+                            Thread.sleep(Settings.VISUALIZE_SPEED);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
