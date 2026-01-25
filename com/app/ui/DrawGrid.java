@@ -109,7 +109,7 @@ public class DrawGrid extends JPanel {
 
             QueuePiece curPiece = path.get(i);
 
-            gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display shortest path type
+            gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display the shortest path type
             piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
             repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID, Settings.RECT_WID);
             try {
