@@ -6,15 +6,10 @@ import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.function.Supplier;
 
 public class DepthFirst implements ISearchAlgorithm {
-    static int[] dx = {1, -1, 0, 0};//right, left, NA, NA
-    static int[] dy = {0, 0, 1, -1};//NA, NA, bottom, top
-
     @Override
     public SearchAlgorithm currentAlgorithm() {
         return SearchAlgorithm.DepthFirst;
@@ -23,21 +18,13 @@ public class DepthFirst implements ISearchAlgorithm {
     @Override
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Stack<QueuePiece> stack = new Stack<>();
-        Queue<QueuePiece> queue = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
 
         stack.add(start);
 
         while (!stack.isEmpty()) {
             var dequeuedPiece = stack.pop();
-            /*
-            if (dequeuedPiece == null) {
-                dequeuedPiece = queue.poll();
-            }
-             */
             assert dequeuedPiece != null;
-            dequeuedPiece.setType(Piece.Type.Checked);
-            // queue.remove(dequeuedPiece);
 
             boolean foundEmptyPiece = false;
             for (int i = 0; i < 4; i++) {
@@ -45,8 +32,8 @@ public class DepthFirst implements ISearchAlgorithm {
                     return;
                 }
 
-                var xc = dequeuedPiece.getX() + dx[i];
-                var yc = dequeuedPiece.getY() + dy[i];
+                var xc = dequeuedPiece.getX() + SearchAlgorithmHelper.dx[i];
+                var yc = dequeuedPiece.getY() + SearchAlgorithmHelper.dy[i];
 
                 if (xc < 0 || xc >= grid.size() || yc < 0 || yc >= grid.getFirst().size()) {
                     continue;
@@ -69,28 +56,6 @@ public class DepthFirst implements ISearchAlgorithm {
                         }
                     }
                     foundEmptyPiece = true;
-                    /*
-                    if (foundEmptyPiece) {
-                        QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
-                        checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
-                        queue.add(new QueuePiece(xc, yc));
-                        continue;
-                    }
-                    foundEmptyPiece = true;
-
-                    checkedPiece.setType(Piece.Type.Checked);
-                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
-                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
-                    stack.add(checkedQueuePiece);
-
-                    gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(), checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
-                    try {
-                        //noinspection BusyWait
-                        Thread.sleep(Settings.VISUALIZE_SPEED);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                     */
                 } else if (checkedPiece.getType() == Piece.Type.End) {
                     gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
                     return;

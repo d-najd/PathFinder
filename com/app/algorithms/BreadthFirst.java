@@ -23,7 +23,6 @@ public class BreadthFirst implements ISearchAlgorithm {
      * instead of the all passed elements in the lists and melting the pc
      */
 
-
     @Override
     public SearchAlgorithm currentAlgorithm() {
         return SearchAlgorithm.BreadthFirst;

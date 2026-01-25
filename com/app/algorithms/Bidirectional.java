@@ -12,9 +12,6 @@ import java.util.Queue;
 import java.util.function.Supplier;
 
 public class Bidirectional implements ISearchAlgorithm {
-    static int[] dx = {1, -1, 0, 0};//right, left, NA, NA
-    static int[] dy = {0, 0, 1, -1};//NA, NA, bottom, top
-
     @Override
     public SearchAlgorithm currentAlgorithm() {
         return SearchAlgorithm.Bidirectional;

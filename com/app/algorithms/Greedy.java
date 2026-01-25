@@ -21,21 +21,12 @@ public class Greedy implements ISearchAlgorithm {
      * reaches the end
      */
 
-    static int[] dx = {1, -1, 0, 0};//right, left, NA, NA
-    static int[] dy = {0, 0, 1, -1};//NA, NA, bottom, top
-
-    private static int endX;
-    private static int endY;
-
     @Override
     public SearchAlgorithm currentAlgorithm() {
         return SearchAlgorithm.Greedy;
     }
 
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
-        endX = endPiece.getX();
-        endY = endPiece.getY();
-
         Queue<QueuePiece> queue = new PriorityQueue<>(Comparator.comparing(Greedy::calculateDistanceFromEnd));
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
         queue.add(start);
@@ -51,8 +42,8 @@ public class Greedy implements ISearchAlgorithm {
                     return;
                 }
 
-                var xc = curX + dx[i];
-                var yc = curY + dy[i];
+                var xc = curX + SearchAlgorithmHelper.dx[i];
+                var yc = curY + SearchAlgorithmHelper.dy[i];
 
 
                 if ((xc >= 0 && xc < grid.size()) && (yc >= 0 && yc < grid.getFirst().size())) {
