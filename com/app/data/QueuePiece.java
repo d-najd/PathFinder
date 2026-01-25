@@ -8,16 +8,19 @@ public class QueuePiece extends Piece {
 
     public QueuePiece(int x, int y) {
         super(x, y);
+        addParent(this, this);
     }
 
     public QueuePiece(int x, int y, Piece.Type startType) {
         super(x, y);
         this.type = startType;
         this.startType = startType;
+        addParent(this, this);
     }
 
     public void addParent(QueuePiece previousPiece, QueuePiece visited){
         visitedPieces = new ArrayList<>(previousPiece.getPath());
+        assert !visitedPieces.contains(visited);
         visitedPieces.add(visited);
     }
 

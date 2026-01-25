@@ -18,17 +18,15 @@ public class Bidirectional implements ISearchAlgorithm {
     }
 
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
-        Queue<QueuePiece> q = new LinkedList<>();
+        Queue<QueuePiece> queue = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), Piece.Type.Start);
         QueuePiece end = new QueuePiece(endPiece.getX(), endPiece.getY(), Piece.Type.End);
-        start.addParent(start, start);
-        end.addParent(end, end);
 
-        q.add(end);
-        q.add(start);
+        queue.add(end);
+        queue.add(start);
 
-        while (q.peek() != null) {
-            QueuePiece dequeuedPiece = q.poll();
+        while (queue.peek() != null) {
+            QueuePiece dequeuedPiece = queue.poll();
             assert dequeuedPiece != null;
             for (int i = 0; i < 4; i++)
             {
@@ -49,7 +47,7 @@ public class Bidirectional implements ISearchAlgorithm {
                         QueuePiece checkedAgainstQueuePiece = new QueuePiece(xc, yc);
                         checkedAgainstQueuePiece.addParent(dequeuedPiece, checkedAgainstQueuePiece);
                         checkedAgainstQueuePiece.setStartType(dequeuedPiece.getStartType());
-                        q.add(checkedAgainstQueuePiece);
+                        queue.add(checkedAgainstQueuePiece);
 
                         gridObj.piecesForRepainting.add(checkedAgainstPiece);
                         gridObj.paintImmediately(checkedAgainstQueuePiece.getX() * gridObj.getRectWid(),
@@ -62,7 +60,7 @@ public class Bidirectional implements ISearchAlgorithm {
                             throw new RuntimeException(e);
                         }
                     } else if (type == Piece.Type.Checked) {
-                        var checkedWith = q.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
+                        var checkedWith = queue.stream().filter(o -> (o.getX() == xc) && (o.getY() == yc)).findAny().orElse(null);
 
                         if (checkedWith == null) {
                             continue;

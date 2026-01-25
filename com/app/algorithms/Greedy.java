@@ -38,7 +38,6 @@ public class Greedy implements ISearchAlgorithm {
 
         Queue<QueuePiece> q = new PriorityQueue<>(Comparator.comparing(Greedy::calculateDistanceFromEnd));
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
-        start.addParent(start, start);
         q.add(start);
 
         while (!q.isEmpty()) {

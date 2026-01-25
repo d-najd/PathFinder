@@ -22,7 +22,6 @@ public class DepthFirst implements ISearchAlgorithm {
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Stack<QueuePiece> stack = new Stack<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
-        start.addParent(start, start);
 
         stack.add(start);
 

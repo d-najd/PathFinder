@@ -96,7 +96,7 @@ public class DrawGrid extends JPanel {
         new GridListeners(gridPieces, this);
     }
 
-    public void drawShortestPath(ArrayList<QueuePiece> path) {
+    public void drawShortestPath(List<QueuePiece> path) {
         var expectedAlgorithm = ContentButtons.getRunningAlgorithm();
         if (expectedAlgorithm == null) {
             return;
