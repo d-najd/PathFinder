@@ -51,14 +51,14 @@ public class Greedy implements ISearchAlgorithm {
                     return;
                 }
 
-                int xc = curX + dx[i];
-                int yc = curY + dy[i];
+                var xc = curX + dx[i];
+                var yc = curY + dy[i];
 
-                if ((xc >= 0 && xc < grid.size()) &&
-                        (yc >= 0 && yc < grid.getFirst().size())) {
-                    var type = grid.get(xc).get(yc).getType();
 
-                    if (type == Piece.Type.Empty)
+                if ((xc >= 0 && xc < grid.size()) && (yc >= 0 && yc < grid.getFirst().size())) {
+                    var checkedPiece = grid.get(xc).get(yc);
+
+                    if (checkedPiece.getType() == Piece.Type.Empty)
                     {
                         QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
                         checkedQueuePiece.addParent(curr, checkedQueuePiece);
@@ -67,7 +67,7 @@ public class Greedy implements ISearchAlgorithm {
                         if (queue.stream().noneMatch(o -> o.getX() == xc && o.getY() == yc))
                             queue.add(checkedQueuePiece);
 
-                    } else if (type == Piece.Type.End) {
+                    } else if (checkedPiece.getType() == Piece.Type.End) {
                         gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
                         return;
                     }

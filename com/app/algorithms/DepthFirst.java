@@ -33,8 +33,8 @@ public class DepthFirst implements ISearchAlgorithm {
                     return;
                 }
 
-                int xc = dequeuedPiece.getX() + dx[i];
-                int yc = dequeuedPiece.getY() + dy[i];
+                var xc = dequeuedPiece.getX() + dx[i];
+                var yc = dequeuedPiece.getY() + dy[i];
 
                 if (xc < 0 || xc >= grid.size() || yc < 0 || yc >= grid.getFirst().size()) {
                     continue;
