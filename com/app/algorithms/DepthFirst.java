@@ -28,13 +28,16 @@ public class DepthFirst implements ISearchAlgorithm {
 
         stack.add(start);
 
-        while (!stack.isEmpty() || !queue.isEmpty()) {
+        while (!stack.isEmpty()) {
             var dequeuedPiece = stack.pop();
+            /*
             if (dequeuedPiece == null) {
                 dequeuedPiece = queue.poll();
             }
-            queue.remove(dequeuedPiece);
+             */
             assert dequeuedPiece != null;
+            dequeuedPiece.setType(Piece.Type.Checked);
+            // queue.remove(dequeuedPiece);
 
             boolean foundEmptyPiece = false;
             for (int i = 0; i < 4; i++) {
@@ -52,6 +55,21 @@ public class DepthFirst implements ISearchAlgorithm {
                 var checkedPiece = grid.get(xc).get(yc);
 
                 if (checkedPiece.getType() == Piece.Type.Empty) {
+                    QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                    stack.add(checkedQueuePiece);
+                    if (!foundEmptyPiece) {
+                        checkedPiece.setType(Piece.Type.Checked);
+                        gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(), checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(Settings.VISUALIZE_SPEED);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    foundEmptyPiece = true;
+                    /*
                     if (foundEmptyPiece) {
                         QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
                         checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
@@ -72,6 +90,7 @@ public class DepthFirst implements ISearchAlgorithm {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                     */
                 } else if (checkedPiece.getType() == Piece.Type.End) {
                     gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
                     return;
