@@ -6,6 +6,8 @@ import com.app.data.QueuePiece;
 import com.app.ui.DrawGrid;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.function.Supplier;
 
@@ -21,13 +23,20 @@ public class DepthFirst implements ISearchAlgorithm {
     @Override
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Stack<QueuePiece> stack = new Stack<>();
+        Queue<QueuePiece> queue = new LinkedList<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
 
         stack.add(start);
 
-        while (stack.peek() != null) {
+        while (!stack.isEmpty() || !queue.isEmpty()) {
             var dequeuedPiece = stack.pop();
+            if (dequeuedPiece == null) {
+                dequeuedPiece = queue.poll();
+            }
+            queue.remove(dequeuedPiece);
             assert dequeuedPiece != null;
+
+            boolean foundEmptyPiece = false;
             for (int i = 0; i < 4; i++) {
                 if (currentAlgorithm.get() != currentAlgorithm()) {
                     return;
@@ -43,6 +52,14 @@ public class DepthFirst implements ISearchAlgorithm {
                 var checkedPiece = grid.get(xc).get(yc);
 
                 if (checkedPiece.getType() == Piece.Type.Empty) {
+                    if (foundEmptyPiece) {
+                        QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
+                        checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                        queue.add(new QueuePiece(xc, yc));
+                        continue;
+                    }
+                    foundEmptyPiece = true;
+
                     checkedPiece.setType(Piece.Type.Checked);
                     QueuePiece checkedQueuePiece = new QueuePiece(xc, yc);
                     checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
@@ -55,7 +72,6 @@ public class DepthFirst implements ISearchAlgorithm {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    break;
                 } else if (checkedPiece.getType() == Piece.Type.End) {
                     gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
                     return;
