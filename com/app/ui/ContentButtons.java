@@ -19,7 +19,7 @@ public class ContentButtons extends JPanel {
     private static final int centerX = Settings.WINDOW_WID / 2 - Settings.CENTER_OFFSET;
 
     private MenuConstructor algorithmsMenu;
-    private SearchAlgorithm currentAlgorithm = SearchAlgorithm.BreadthFirst;
+    private SearchAlgorithm selectedAlgorithm = SearchAlgorithm.BreadthFirst;
     private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy() };
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -50,11 +50,11 @@ public class ContentButtons extends JPanel {
         button = new JButton("Visualize");
         button.setBounds(centerX - (Settings.BUTTON_WID / 2), 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
         button.addActionListener(_ -> {
-            var matching = Arrays.stream(searchAlgorithms).filter(o -> o.currentAlgorithm() == currentAlgorithm).findFirst();
+            var matching = Arrays.stream(searchAlgorithms).filter(o -> o.currentAlgorithm() == selectedAlgorithm).findFirst();
             if (matching.isEmpty()) {
                 throw new IllegalStateException();
             }
-            runningAlgorithm = SearchAlgorithm.BreadthFirst;
+            runningAlgorithm = selectedAlgorithm;
 
             executor.submit(() -> {
                 matching.get().start(drawGrid.startPiece, drawGrid.endPiece, drawGrid.gridPieces, drawGrid, Settings.VISUALIZE_SPEED, ContentButtons::getRunningAlgorithm);
@@ -82,18 +82,17 @@ public class ContentButtons extends JPanel {
         JButton button;
 
         button = new JButton("Breadth first");
-        button.addActionListener(_ -> currentAlgorithm = SearchAlgorithm.BreadthFirst);
+        button.addActionListener(_ -> selectedAlgorithm = SearchAlgorithm.BreadthFirst);
         algorithmsList.add(button);
 
         button = new JButton("Greedy");
-        button.addActionListener(_ -> currentAlgorithm = SearchAlgorithm.Greedy);
+        button.addActionListener(_ -> selectedAlgorithm = SearchAlgorithm.Greedy);
         algorithmsList.add(button);
 
         button = new JButton("Bidirectional swarm");
-        button.addActionListener(_ -> currentAlgorithm = SearchAlgorithm.Bidirectional);
+        button.addActionListener(_ -> selectedAlgorithm = SearchAlgorithm.Bidirectional);
         algorithmsList.add(button);
 
         algorithmsMenu = new MenuConstructor(this, rootButton, algorithmsList, null);
     }
-
 }

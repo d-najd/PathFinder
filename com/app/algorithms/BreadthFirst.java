@@ -37,30 +37,29 @@ public class BreadthFirst implements ISearchAlgorithm {
         q.add(start);
 
         while (q.peek() != null) {
-            var curr = q.poll();
-            assert curr != null;
-            int curX = curr.getX();
-            int curY = curr.getY();
+            var dequeuedPiece = q.poll();
+            assert dequeuedPiece != null;
             for (int i = 0; i < 4; i++)
             {
-                if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
-                        (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    int xc = curX + dx[i];
-                    int yc = curY + dy[i];
+                if (currentAlgorithm.get() != currentAlgorithm()) {
+                    return;
+                }
+
+                if ((dequeuedPiece.getX() + dx[i] >= 0 && dequeuedPiece.getX() + dx[i] < grid.size()) &&
+                        (dequeuedPiece.getY() + dy[i] >= 0 && dequeuedPiece.getY() + dy[i] < grid.getFirst().size())) {
+                    int xc = dequeuedPiece.getX() + dx[i];
+                    int yc = dequeuedPiece.getY() + dy[i];
                     var type = grid.get(xc).get(yc).getType();
 
                     if (type == Piece.Type.Empty)
                     {
                         grid.get(xc).get(yc).setType(Piece.Type.Checked);
-                        QueuePiece temp = new QueuePiece(xc, yc);
-                        temp.addParent(curr, temp);
-                        q.add(temp);
+                        QueuePiece checkedAgainstPiece = new QueuePiece(xc, yc);
+                        checkedAgainstPiece.addParent(dequeuedPiece, checkedAgainstPiece);
+                        q.add(checkedAgainstPiece);
 
-                        if (currentAlgorithm.get() != currentAlgorithm()) {
-                            return;
-                        }
 
-                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(), temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+                        gridObj.paintImmediately(checkedAgainstPiece.getX() * gridObj.getRectWid(), checkedAgainstPiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
                         try {
                             //noinspection BusyWait
                             Thread.sleep(visualizeSpeed);
@@ -68,7 +67,7 @@ public class BreadthFirst implements ISearchAlgorithm {
                             throw new RuntimeException(e);
                         }
                     } else if (type == Piece.Type.End) {
-                        gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
+                        gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
                         return;
                     }
                 }

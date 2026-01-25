@@ -48,15 +48,6 @@ public class DrawGrid extends JPanel {
                 g2d.setColor(Color.black);
                 g2d.draw(curPiece.getRect());
             }
-            // piecesCopy.clear();
-            //wait some time so it doesn't go tooo fast
-            /*
-            try {
-                Thread.sleep(visualize_speed);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-             */
         } else if (!gridDrawn) {
             drawGrid((Graphics2D) g);
             gridDrawn = true;
@@ -105,15 +96,24 @@ public class DrawGrid extends JPanel {
         new GridListeners(gridPieces, this);
     }
 
-    @SuppressWarnings("BusyWait")
     public void drawShortestPath(ArrayList<QueuePiece> path) {
+        var expectedAlgorithm = ContentButtons.getRunningAlgorithm();
+        if (expectedAlgorithm == null) {
+            return;
+        }
+
         for (int i = 1; i < path.size(); i++) {
+            if (expectedAlgorithm != ContentButtons.getRunningAlgorithm()) {
+                return;
+            }
+
             QueuePiece curPiece = path.get(i);
 
             gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);//display shortest path type
             piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
             repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID, Settings.RECT_WID);
             try {
+                //noinspection BusyWait
                 Thread.sleep(Settings.SHORTEST_VISUALIZE_SPEED);
             } catch (InterruptedException e) {
                 e.printStackTrace();

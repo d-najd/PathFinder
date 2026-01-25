@@ -47,6 +47,10 @@ public class Greedy implements ISearchAlgorithm {
             int curY = curr.getY();
 
             for (int i = 0; i < 4; i++) {
+                if (currentAlgorithm.get() != currentAlgorithm()) {
+                    return;
+                }
+
                 if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
                         (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
                     int xc = curX + dx[i];

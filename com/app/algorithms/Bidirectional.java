@@ -27,29 +27,32 @@ public class Bidirectional implements ISearchAlgorithm {
         q.add(start);
 
         while (q.peek() != null) {
-            QueuePiece curr = q.poll();
-            assert curr != null;
-            int curX = curr.getX();
-            int curY = curr.getY();
-            for (int i = 0; i < 4; i++) //for each direction
+            QueuePiece dequeuedPiece = q.poll();
+            assert dequeuedPiece != null;
+            for (int i = 0; i < 4; i++)
             {
-                if ((curX + dx[i] >= 0 && curX + dx[i] < grid.size()) &&
-                        (curY + dy[i] >= 0 && curY + dy[i] < grid.getFirst().size())) {
-                    int xc = curX + dx[i];
-                    int yc = curY + dy[i];
+                if (currentAlgorithm.get() != currentAlgorithm()) {
+                    return;
+                }
+
+                if ((dequeuedPiece.getX() + dx[i] >= 0 && dequeuedPiece.getX() + dx[i] < grid.size()) &&
+                        (dequeuedPiece.getY() + dy[i] >= 0 && dequeuedPiece.getY() + dy[i] < grid.getFirst().size())) {
+                    int xc = dequeuedPiece.getX() + dx[i];
+                    int yc = dequeuedPiece.getY() + dy[i];
                     var type = grid.get(xc).get(yc).getType();
-                    Piece tempPiece = grid.get(xc).get(yc);
+                    Piece checkedAgainstPiece = grid.get(xc).get(yc);
 
                     if (type == Piece.Type.Empty) {
-                        tempPiece.setStartType(curr.getStartType());
-                        tempPiece.setType(Piece.Type.Checked);
-                        QueuePiece temp = new QueuePiece(xc, yc);
-                        temp.addParent(curr, temp);
-                        temp.setStartType(curr.getStartType());
-                        q.add(temp);
+                        checkedAgainstPiece.setStartType(dequeuedPiece.getStartType());
+                        checkedAgainstPiece.setType(Piece.Type.Checked);
+                        QueuePiece checkedAgainstQueuePiece = new QueuePiece(xc, yc);
+                        checkedAgainstQueuePiece.addParent(dequeuedPiece, checkedAgainstQueuePiece);
+                        checkedAgainstQueuePiece.setStartType(dequeuedPiece.getStartType());
+                        q.add(checkedAgainstQueuePiece);
 
-                        gridObj.paintImmediately(temp.getX() * gridObj.getRectWid(),
-                                temp.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+                        gridObj.piecesForRepainting.add(checkedAgainstPiece);
+                        gridObj.paintImmediately(checkedAgainstQueuePiece.getX() * gridObj.getRectWid(),
+                                checkedAgainstQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
                                 gridObj.getRectHei());
                         try {
                             //noinspection BusyWait
@@ -64,9 +67,9 @@ public class Bidirectional implements ISearchAlgorithm {
                             continue;
                         }
 
-                        if ((curr.getStartType() == Piece.Type.Start && checkedWith.getStartType() == Piece.Type.End) ||
-                                (curr.getStartType() == Piece.Type.End && checkedWith.getStartType() == Piece.Type.Start)) {
-                            gridObj.drawShortestPath(new ArrayList<>(curr.getPath()));
+                        if ((dequeuedPiece.getStartType() == Piece.Type.Start && checkedWith.getStartType() == Piece.Type.End) ||
+                                (dequeuedPiece.getStartType() == Piece.Type.End && checkedWith.getStartType() == Piece.Type.Start)) {
+                            gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
                             ArrayList<QueuePiece> path = new ArrayList<>(checkedWith.getPath());
                             Collections.reverse(path);
                             path.addFirst(new QueuePiece(-1, -1));
