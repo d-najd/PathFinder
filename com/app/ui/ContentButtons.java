@@ -20,7 +20,7 @@ public class ContentButtons extends JPanel {
 
     private MenuConstructor algorithmsMenu;
     private SearchAlgorithm selectedAlgorithm = SearchAlgorithm.BreadthFirst;
-    private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy() };
+    private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy(), new DepthFirst() };
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -83,6 +83,10 @@ public class ContentButtons extends JPanel {
 
         button = new JButton("Breadth first");
         button.addActionListener(_ -> selectedAlgorithm = SearchAlgorithm.BreadthFirst);
+        algorithmsList.add(button);
+
+        button = new JButton("Depth first");
+        button.addActionListener(_ -> selectedAlgorithm = SearchAlgorithm.DepthFirst);
         algorithmsList.add(button);
 
         button = new JButton("Greedy");
