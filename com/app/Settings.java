@@ -22,7 +22,7 @@ public class Settings {
     public static final int BUTTON_HEI = 30;
     public static final int BUTTON_MARGIN = 5;
     public static final int RECT_WID = 10;
-    public static final int VISUALIZE_SPEED = 0;
+    public static final int VISUALIZE_SPEED = 2;
     public static final int SHORTEST_VISUALIZE_SPEED = 15;
     public static final int GRID_OFFSET_X = WINDOW_WID/2 - ((RECT_WID * GRID_WID)/2) - CENTER_OFFSET;
     public static final int GRID_OFFSET_Y = 150;

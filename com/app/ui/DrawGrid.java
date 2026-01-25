@@ -268,11 +268,7 @@ public class DrawGrid extends JPanel {
         @Override
         public void mouseReleased(MouseEvent e) {
             lastPressed = null;
-
-            if (mouseHeld && !movedFromUniquePiece) {
-                wasPreviousPieceUnique = null;
-            }
-
+            wasPreviousPieceUnique = null;
             mouseHeld = false;
         }
 
