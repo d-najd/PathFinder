@@ -19,41 +19,46 @@ public class DepthFirst implements ISearchAlgorithm {
     public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj, Supplier<SearchAlgorithm> currentAlgorithm) {
         Stack<QueuePiece> stack = new Stack<>();
         QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
+        start.setType(Piece.Type.Start);
 
         stack.add(start);
 
         while (!stack.isEmpty()) {
-            var dequeuedPiece = stack.pop();
-            assert dequeuedPiece != null;
+            var dequeuedQueuePiece = stack.pop();
+            assert dequeuedQueuePiece != null;
+            var dequeuedPiece = grid.get(dequeuedQueuePiece.getX()).get(dequeuedQueuePiece.getY());
+            if (dequeuedPiece.getType() == Piece.Type.Checked) {
+                continue;
+            }
 
-            boolean foundEmptyPiece = false;
+            if (dequeuedPiece.getType() != Piece.Type.Start) {
+                dequeuedPiece.setType(Piece.Type.Checked);
+                gridObj.paintImmediately(dequeuedQueuePiece.getX() * gridObj.getRectWid(), dequeuedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(Settings.VISUALIZE_SPEED);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             for (int i = 0; i < 4; i++) {
                 if (currentAlgorithm.get() != currentAlgorithm()) {
                     return;
                 }
 
-                var checkedPiece = SearchAlgorithmHelper.getPieceByIndex(grid, dequeuedPiece, i);
+                var checkedPiece = SearchAlgorithmHelper.getPieceByIndex(grid, dequeuedQueuePiece, i);
                 if (checkedPiece == null) {
                     continue;
                 }
 
                 if (checkedPiece.getType() == Piece.Type.Empty) {
                     QueuePiece checkedQueuePiece = new QueuePiece(checkedPiece);
-                    checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
+                    checkedQueuePiece.addParent(dequeuedQueuePiece, checkedQueuePiece);
                     stack.add(checkedQueuePiece);
-                    if (!foundEmptyPiece) {
-                        checkedPiece.setType(Piece.Type.Checked);
-                        gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(), checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
-                        try {
-                            //noinspection BusyWait
-                            Thread.sleep(Settings.VISUALIZE_SPEED);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    foundEmptyPiece = true;
                 } else if (checkedPiece.getType() == Piece.Type.End) {
-                    gridObj.drawShortestPath(new ArrayList<>(dequeuedPiece.getPath()));
+                    gridObj.drawShortestPath(new ArrayList<>(dequeuedQueuePiece.getPath()));
                     return;
                 }
             }
