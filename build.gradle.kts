@@ -11,5 +11,5 @@ plugins {
 }
 
 application {
-    mainClass.set("main.MainFunction")
+    mainClass.set("com.app.MainFunction")
 }

@@ -1,13 +1,13 @@
-package algorithms;
+package com.app.algorithms;
 
-import data.Piece;
-import data.QueuePiece;
-import ui.DrawGrid;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
+import com.app.ui.DrawGrid;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-import main.Settings;
+import com.app.Settings;
 
 public class Greedy implements ISearchAlgorithm {
   /**

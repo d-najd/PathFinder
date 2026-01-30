@@ -1,8 +1,8 @@
-package ui;
+package com.app.ui;
 
-import data.Piece;
-import data.QueuePiece;
-import main.Settings;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
+import com.app.Settings;
 
 import javax.swing.*;
 import java.awt.*;

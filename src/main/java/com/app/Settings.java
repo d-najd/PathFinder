@@ -1,4 +1,4 @@
-package main;
+package com.app;
 
 public class Settings {
   /**

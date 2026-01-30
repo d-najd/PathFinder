@@ -1,7 +1,7 @@
-package ui;
+package com.app.ui;
 
-import algorithms.*;
-import main.Settings;
+import com.app.algorithms.*;
+import com.app.Settings;
 
 import javax.swing.*;
 import java.util.ArrayList;

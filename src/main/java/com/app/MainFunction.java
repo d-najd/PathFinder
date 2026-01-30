@@ -1,7 +1,7 @@
-package main;
+package com.app;
 
-import ui.ContentButtons;
-import ui.DrawGrid;
+import com.app.ui.ContentButtons;
+import com.app.ui.DrawGrid;
 
 import javax.swing.*;
 
