@@ -1,6 +1,6 @@
-package com.app.algorithms;
+package algorithms;
 
-import com.app.data.Piece;
+import data.Piece;
 
 import java.util.ArrayList;
 

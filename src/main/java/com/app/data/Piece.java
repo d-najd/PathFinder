@@ -1,7 +1,6 @@
-package com.app.data;
+package data;
 
-import com.app.Settings;
-
+import main.Settings;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 

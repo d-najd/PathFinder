@@ -1,4 +1,4 @@
-package com.app.algorithms;
+package algorithms;
 
 public enum SearchAlgorithm {
     BreadthFirst,

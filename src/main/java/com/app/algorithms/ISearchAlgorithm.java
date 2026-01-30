@@ -1,7 +1,7 @@
-package com.app.algorithms;
+package algorithms;
 
-import com.app.ui.DrawGrid;
-import com.app.data.Piece;
+import ui.DrawGrid;
+import data.Piece;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
