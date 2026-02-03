@@ -1,8 +1,8 @@
 package com.app.algorithms;
 
 public enum SearchAlgorithm {
-  BreadthFirst,
-  Bidirectional,
-  Greedy,
-  DepthFirst,
+	BreadthFirst,
+	Bidirectional,
+	Greedy,
+	DepthFirst,
 }

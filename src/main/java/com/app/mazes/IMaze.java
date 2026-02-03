@@ -6,7 +6,7 @@ import com.app.ui.DrawGrid;
 import java.util.ArrayList;
 
 public interface IMaze {
-    Maze currentMaze();
+	Maze currentMaze();
 
-    void generateMaze(ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj);
+	void generateMaze(ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj);
 }
