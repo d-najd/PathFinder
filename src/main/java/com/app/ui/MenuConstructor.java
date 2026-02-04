@@ -2,11 +2,15 @@ package com.app.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class MenuConstructor {
 	private Boolean state = false; // false for invisible, true for visible
 	private final ArrayList<JButton> buttonList = new ArrayList<>();
+
+	private final JPanel panel;
+	private final JButton menuButton;
 
 	/**
 	 * basic constructor for menu under the button,
@@ -19,6 +23,11 @@ public class MenuConstructor {
 	 * @param tag             a tag for special some special action
 	 */
 	public MenuConstructor(JPanel panel, JButton menuButton, ArrayList<JButton> inputButtonList, String tag) {
+		this.panel = panel;
+		this.menuButton = menuButton;
+
+		closeOnPressedOutside();
+
 		for (int i = 0; i < inputButtonList.size(); i++) {
 			JButton curButton = inputButtonList.get(i);
 			Rectangle bounds = menuButton.getBounds();
@@ -38,5 +47,26 @@ public class MenuConstructor {
 		for (JButton button : buttonList) {
 			button.setVisible(state);
 		}
+	}
+
+	private void closeOnPressedOutside() {
+		long eventMask = AWTEvent.MOUSE_MOTION_EVENT_MASK + AWTEvent.MOUSE_EVENT_MASK;
+		Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+			if (!state) {
+				return;
+			}
+
+			if (!(event instanceof MouseEvent me && me.getID() == MouseEvent.MOUSE_CLICKED)) {
+				return;
+			}
+
+			if (menuButton.contains(me.getPoint())) {
+				System.out.println("CONTAINS ");
+				return;
+			}
+
+			swapState();
+
+		}, eventMask);
 	}
 }
