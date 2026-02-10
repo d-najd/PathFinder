@@ -4,6 +4,7 @@ import com.app.algorithms.*;
 import com.app.mazes.IMaze;
 import com.app.mazes.Maze;
 import com.app.mazes.RandomMaze;
+import com.app.mazes.StarMaze;
 import com.app.Settings;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class ContentButtons extends JPanel {
 	private SearchAlgorithm selectedAlgorithm = SearchAlgorithm.BreadthFirst;
 	private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy(),
 			new DepthFirst() };
-	private final IMaze[] mazes = { new RandomMaze() };
+	private final IMaze[] mazes = { new RandomMaze(), new StarMaze() };
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -100,6 +101,10 @@ public class ContentButtons extends JPanel {
 
 		button = new JButton("Random maze");
 		button.addActionListener(o -> submitMaze(Maze.Random));
+		mazesList.add(button);
+
+		button = new JButton("Star Pattern");
+		button.addActionListener(o -> submitMaze(Maze.Star));
 		mazesList.add(button);
 
 		mazesMenu = new MenuConstructor(this, rootButton, mazesList, null);

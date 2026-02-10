@@ -2,7 +2,6 @@ package com.app.mazes;
 
 import java.util.List;
 
-import com.app.Settings;
 import com.app.data.Piece;
 import com.app.ui.DrawGrid;
 
@@ -27,9 +26,8 @@ public class RandomMaze implements IMaze {
 
 				curPiece.setType(Piece.Type.Wall);
 			}
-			gridObj.piecesForRepainting.addAll(colPieceArr);
 		}
 
-		gridObj.paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID, Settings.GRID_HEI * Settings.RECT_WID);
+		MazeUtils.repaintAll(grid, gridObj);
 	}
 }

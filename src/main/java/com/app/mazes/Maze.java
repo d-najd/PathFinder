@@ -1,5 +1,6 @@
 package com.app.mazes;
 
 public enum Maze {
-	Random
+	Random,
+	Star
 }
