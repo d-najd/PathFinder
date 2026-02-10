@@ -1,15 +1,14 @@
 package com.app.algorithms;
 
-import com.app.data.Piece;
-import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.function.Supplier;
 
 import com.app.Settings;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
+import com.app.ui.DrawGrid;
 
 public class BreadthFirst implements ISearchAlgorithm {
 	/**
@@ -33,7 +32,7 @@ public class BreadthFirst implements ISearchAlgorithm {
 		return SearchAlgorithm.BreadthFirst;
 	}
 
-	public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		Queue<QueuePiece> queue = new LinkedList<>();
 		var start = new QueuePiece(startPiece.getX(), startPiece.getY());

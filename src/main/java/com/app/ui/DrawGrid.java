@@ -18,7 +18,7 @@ import com.app.data.Piece;
 import com.app.data.QueuePiece;
 
 public class DrawGrid extends JPanel {
-	protected ArrayList<ArrayList<Piece>> gridPieces = new ArrayList<>();
+	protected List<List<Piece>> gridPieces = new ArrayList<>();
 	protected Piece startPiece;
 	protected Piece endPiece;
 
@@ -54,7 +54,7 @@ public class DrawGrid extends JPanel {
 			drawStartPositions();
 		} else {
 			Graphics2D g2d = (Graphics2D) g;
-			for (ArrayList<Piece> pieces : gridPieces)
+			for (List<Piece> pieces : gridPieces)
 				for (Piece piece : pieces) {
 					g2d.setColor(piece.getColor());
 					g2d.fill(piece.getRect());
@@ -124,7 +124,7 @@ public class DrawGrid extends JPanel {
 	}
 
 	protected void clearBoard() {
-		for (ArrayList<Piece> colPieceArr : gridPieces) {
+		for (List<Piece> colPieceArr : gridPieces) {
 			for (Piece curPiece : colPieceArr)
 				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath
 						|| curPiece.getType() == Piece.Type.Wall)
@@ -136,7 +136,7 @@ public class DrawGrid extends JPanel {
 	}
 
 	protected void clearPath() {
-		for (ArrayList<Piece> colPieceArr : gridPieces) {
+		for (List<Piece> colPieceArr : gridPieces) {
 			for (Piece curPiece : colPieceArr)
 				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
 					curPiece.setType(Piece.Type.Empty);
@@ -155,7 +155,7 @@ public class DrawGrid extends JPanel {
 	}
 
 	class GridListeners implements MouseListener, MouseMotionListener {
-		private ArrayList<ArrayList<Piece>> grid;
+		private List<List<Piece>> grid;
 		private DrawGrid gridObj;
 		private Piece lastPressed;
 
@@ -163,7 +163,7 @@ public class DrawGrid extends JPanel {
 		private boolean movedFromUniquePiece; // its hard to press once without holding so had to add special case for it
 															// (for startPiece and endPiece)
 
-		GridListeners(ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj) {
+		GridListeners(List<List<Piece>> grid, DrawGrid gridObj) {
 			this.grid = grid;
 			this.gridObj = gridObj;
 			gridObj.addMouseListener(this);
@@ -174,7 +174,7 @@ public class DrawGrid extends JPanel {
 			Rectangle2D rect;
 			Piece piece = null;
 
-			for (ArrayList<Piece> pieces : grid) {
+			for (List<Piece> pieces : grid) {
 				for (Piece value : pieces) {
 					rect = value.getRect();
 					if (rect.contains(xPos, yPos)) {

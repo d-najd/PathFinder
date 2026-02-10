@@ -1,14 +1,14 @@
 package com.app.algorithms;
 
-import com.app.data.Piece;
-import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.function.Supplier;
 
 import com.app.Settings;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
+import com.app.ui.DrawGrid;
 
 public class DepthFirst implements ISearchAlgorithm {
 	@Override
@@ -17,7 +17,7 @@ public class DepthFirst implements ISearchAlgorithm {
 	}
 
 	@Override
-	public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		Stack<QueuePiece> stack = new Stack<>();
 		QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());

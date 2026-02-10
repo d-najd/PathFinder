@@ -34,7 +34,7 @@ public class Greedy implements ISearchAlgorithm {
 		return SearchAlgorithm.Greedy;
 	}
 
-	public void start(Piece startPiece, Piece endPiece, ArrayList<ArrayList<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		endX = endPiece.getX();
 		endY = endPiece.getY();
