@@ -9,7 +9,6 @@ public class MenuConstructor {
 	private Boolean state = false; // false for invisible, true for visible
 	private final ArrayList<JButton> buttonList = new ArrayList<>();
 
-	private final JPanel panel;
 	private final JButton menuButton;
 
 	/**
@@ -23,7 +22,6 @@ public class MenuConstructor {
 	 * @param tag             a tag for special some special action
 	 */
 	public MenuConstructor(JPanel panel, JButton menuButton, ArrayList<JButton> inputButtonList, String tag) {
-		this.panel = panel;
 		this.menuButton = menuButton;
 
 		closeOnPressedOutside();
@@ -52,16 +50,18 @@ public class MenuConstructor {
 	private void closeOnPressedOutside() {
 		long eventMask = AWTEvent.MOUSE_MOTION_EVENT_MASK + AWTEvent.MOUSE_EVENT_MASK;
 		Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-			if (!state) {
-				return;
-			}
-
 			if (!(event instanceof MouseEvent me && me.getID() == MouseEvent.MOUSE_CLICKED)) {
 				return;
 			}
 
-			if (menuButton.contains(me.getPoint())) {
-				System.out.println("CONTAINS ");
+			if (!state) {
+				return;
+			}
+
+			var localPoint = me.getLocationOnScreen();
+			SwingUtilities.convertPointFromScreen(localPoint, menuButton);
+
+			if (menuButton.contains(localPoint)) {
 				return;
 			}
 
