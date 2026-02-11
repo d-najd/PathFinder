@@ -48,7 +48,12 @@ public class ContentButtons extends JPanel {
 		button.setBounds((int) (centerX - Settings.BUTTON_WID * 2.5) - Settings.BUTTON_MARGIN * 2, 15,
 				Settings.BUTTON_WID,
 				Settings.BUTTON_HEI);
-		button.addActionListener(o -> mazesMenu.swapState());
+		button.addActionListener(o -> {
+			if (runningAlgorithm != null) {
+				return;
+			}
+			mazesMenu.swapState();
+		});
 		add(button);
 
 		mazesDropdownMenu(button);
@@ -56,7 +61,12 @@ public class ContentButtons extends JPanel {
 		button = new JButton("Algorithms");
 		button.setBounds((int) (centerX - Settings.BUTTON_WID * 1.5) - Settings.BUTTON_MARGIN, 15, Settings.BUTTON_WID,
 				Settings.BUTTON_HEI);
-		button.addActionListener(o -> algorithmsMenu.swapState());
+		button.addActionListener(o -> {
+			if (runningAlgorithm != null) {
+				return;
+			}
+			algorithmsMenu.swapState();
+		});
 		add(button);
 
 		algorithmsDropdownMenu(button);
@@ -64,6 +74,10 @@ public class ContentButtons extends JPanel {
 		button = new JButton("Visualize");
 		button.setBounds(centerX - (Settings.BUTTON_WID / 2), 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
 		button.addActionListener(m -> {
+			if (getRunningAlgorithm() != null) {
+				return;
+			}
+
 			var matching = Arrays.stream(searchAlgorithms).filter(o -> o.currentAlgorithm() == selectedAlgorithm)
 					.findFirst();
 			if (matching.isEmpty()) {
@@ -83,7 +97,6 @@ public class ContentButtons extends JPanel {
 				Settings.BUTTON_HEI);
 		button.addActionListener(o -> {
 			runningAlgorithm = null;
-
 			drawGrid.clearBoard();
 		});
 		add(button);
@@ -92,7 +105,10 @@ public class ContentButtons extends JPanel {
 		button.setBounds((int) (centerX + Settings.BUTTON_WID * 1.5 + Settings.BUTTON_MARGIN * 2), 15,
 				Settings.BUTTON_WID,
 				Settings.BUTTON_HEI);
-		button.addActionListener(o -> drawGrid.clearPath());
+		button.addActionListener(o -> {
+			runningAlgorithm = null;
+			drawGrid.clearPath();
+		});
 		add(button);
 	}
 
