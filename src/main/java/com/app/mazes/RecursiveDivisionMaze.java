@@ -14,9 +14,7 @@ public class RecursiveDivisionMaze implements IMaze {
 
 	@Override
 	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
-		// var innerGrid = fillBorders(grid, gridObj);
 		divide(grid, gridObj);
-
 		MazeUtils.repaintAll(grid, gridObj);
 	}
 
@@ -90,28 +88,6 @@ public class RecursiveDivisionMaze implements IMaze {
 		} else {
 			return SplitType.Horizontal;
 		}
-	}
-
-	/**
-	 * @return grid without the border elements (inner grid)
-	 */
-	private static List<List<Piece>> fillBorders(List<List<Piece>> grid, DrawGrid gridObj) {
-		assert grid.size() >= 2 && grid.getFirst().size() >= 2;
-
-		for (Piece curPiece : grid.getFirst()) {
-			MazeUtils.setPieceToWallIfEmpty(curPiece);
-		}
-
-		for (List<Piece> curCol : grid.subList(1, grid.size())) {
-			MazeUtils.setPieceToWallIfEmpty(curCol.getFirst());
-			MazeUtils.setPieceToWallIfEmpty(curCol.getLast());
-		}
-
-		for (Piece curPiece : grid.getLast().subList(1, grid.size() - 1)) {
-			MazeUtils.setPieceToWallIfEmpty(curPiece);
-		}
-
-		return grid.subList(1, grid.size() - 1).stream().map(o -> o.subList(1, o.size() - 1)).toList();
 	}
 
 	private enum SplitType {
