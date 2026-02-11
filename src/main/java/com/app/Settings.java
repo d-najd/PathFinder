@@ -22,7 +22,7 @@ public class Settings {
 	public static final int WINDOW_WID = 900;
 	public static final int WINDOW_HEI = 800;
 	public static final int GRID_WID = 40;
-	public static final int GRID_HEI = 10;
+	public static final int GRID_HEI = 40;
 	public static final int BUTTON_HEI = 30;
 	public static final int BUTTON_WID = 150;
 	public static final int BUTTON_MARGIN = 5;

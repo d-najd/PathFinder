@@ -14,23 +14,17 @@ public class RecursiveDivisionMaze implements IMaze {
 
 	@Override
 	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
-		// fillBorders(grid, gridObj);
-
-		// VERTICAL
-		// grid.getFirst().forEach(o -> o.setType(Piece.Type.Wall));
-
-		/*
-		 * for (int i = 0; i < remainingWidth; i++) {
-		 * grid.get(i).get(3).setType(Piece.Type.Wall);
-		 * }
-		 */
-
+		// var innerGrid = fillBorders(grid, gridObj);
 		divide(grid, gridObj);
 
 		MazeUtils.repaintAll(grid, gridObj);
 	}
 
 	private static void divide(List<List<Piece>> grid, DrawGrid gridObj) {
+		if (grid.size() == 0) {
+			return;
+		}
+
 		var remainingWidth = grid.size();
 		var remainingHeight = grid.getFirst().size();
 
@@ -42,64 +36,51 @@ public class RecursiveDivisionMaze implements IMaze {
 			return;
 		}
 
-		// var splitType = determineSplitType(remainingWidth, remainingHeight);
-		var splitType = SplitType.Horizontal;
+		// var splitType = SplitType.Vertical;
+		var splitType = determineSplitType(remainingWidth, remainingHeight);
 
 		if (splitType == SplitType.Horizontal) {
 			if (remainingHeight <= 2) {
 				return;
 			}
 
-			var index = new Random().nextInt(remainingHeight - 2); // TODO not sure if it should be -1 here or -2
+			var splitIndex = new Random().nextInt(remainingHeight - 2);
+			var pathPieceIndex = new Random().nextInt(remainingWidth);
 
 			for (int i = 0; i < remainingWidth; i++) {
-				grid.get(i).get(index + 1).setType(Piece.Type.Wall);
+				if (i == pathPieceIndex) {
+					continue;
+				}
+
+				MazeUtils.setPieceToWallIfEmpty(grid.get(i).get(splitIndex + 1));
 			}
 
-			divide(grid.stream().map(o -> o.subList(0, index)).toList(), gridObj);
-			if (grid.size() > index + 2) {
-				divide(grid.stream().map(o -> o.subList(index + 2, grid.getFirst().size())).toList(), gridObj);
+			divide(grid.stream().map(o -> o.subList(0, splitIndex)).toList(), gridObj);
+			if (remainingWidth > splitIndex + 2) {
+				divide(grid.stream().map(o -> o.subList(splitIndex + 2, remainingHeight)).toList(), gridObj);
 			}
 		} else {
+			if (remainingWidth <= 2) {
+				return;
+			}
 
+			var splitIndex = new Random().nextInt(remainingWidth - 2);
+			var pathPieceIndex = new Random().nextInt(remainingHeight);
+
+			for (int i = 0; i < remainingHeight; i++) {
+				if (i == pathPieceIndex) {
+					continue;
+				}
+
+				MazeUtils.setPieceToWallIfEmpty(grid.get(splitIndex + 1).get(i));
+			}
+
+			divide(grid.subList(0, splitIndex), gridObj);
+			if (remainingHeight > splitIndex + 2) {
+				divide(grid.subList(splitIndex + 2, remainingWidth), gridObj);
+			}
 		}
 	}
-
-	/**
-	 * gets the grid except the outside pieces
-	 * Example:
-	 * x pieces returned
-	 * 0 pieces ignored
-	 *
-	 * 0000
-	 * xxxx
-	 * xxxx
-	 * 0000
-	 */
-	private List<List<Piece>> getExceptHorizontalBorder(List<List<Piece>> grid, DrawGrid gridObj) {
-		return grid.subList(1, grid.size() - 1);
-	}
-
-	/**
-	 * gets the grid except the outside pieces
-	 * Example:
-	 * x pieces returned
-	 * 0 pieces ignored
-	 *
-	 * 0xx0
-	 * 0xx0
-	 * 0xx0
-	 * 0xx0
-	 */
-	private List<List<Piece>> getExceptVerticalBorder(List<List<Piece>> grid, DrawGrid gridObj) {
-		return grid.stream().map(o -> o.subList(1, o.size() - 1)).toList();
-	}
-
-	/**
-	 * If size is 1 or less (x or y) invalid
-	 * If size 2 on both invalid
-	 * If size 2 pick the other
-	 */
 
 	/**
 	 * Determines [SplitType], it is skewed to pick the [SplitType] which has more
@@ -115,7 +96,7 @@ public class RecursiveDivisionMaze implements IMaze {
 			return SplitType.Horizontal;
 		}
 
-		var widthUNormPercentage = width / (width + height);
+		var widthUNormPercentage = (float) width / (width + height);
 		if (new Random().nextFloat() < widthUNormPercentage) {
 			return SplitType.Vertical;
 		} else {
@@ -123,7 +104,12 @@ public class RecursiveDivisionMaze implements IMaze {
 		}
 	}
 
-	private static void fillBorders(List<List<Piece>> grid, DrawGrid gridObj) {
+	/**
+	 * @return grid without the border elements (inner grid)
+	 */
+	private static List<List<Piece>> fillBorders(List<List<Piece>> grid, DrawGrid gridObj) {
+		assert grid.size() >= 2 && grid.getFirst().size() >= 2;
+
 		for (Piece curPiece : grid.getFirst()) {
 			MazeUtils.setPieceToWallIfEmpty(curPiece);
 		}
@@ -136,6 +122,8 @@ public class RecursiveDivisionMaze implements IMaze {
 		for (Piece curPiece : grid.getLast().subList(1, grid.size() - 1)) {
 			MazeUtils.setPieceToWallIfEmpty(curPiece);
 		}
+
+		return grid.subList(1, grid.size() - 1).stream().map(o -> o.subList(1, o.size() - 1)).toList();
 	}
 
 	private enum SplitType {
