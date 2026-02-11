@@ -28,15 +28,6 @@ public class RecursiveDivisionMaze implements IMaze {
 		var remainingWidth = grid.size();
 		var remainingHeight = grid.getFirst().size();
 
-		if (remainingHeight <= 1 || remainingWidth <= 1) {
-			return;
-		}
-
-		if (remainingWidth <= 2 && remainingHeight <= 2) {
-			return;
-		}
-
-		// var splitType = SplitType.Vertical;
 		var splitType = determineSplitType(remainingWidth, remainingHeight);
 
 		if (splitType == SplitType.Horizontal) {
@@ -56,9 +47,8 @@ public class RecursiveDivisionMaze implements IMaze {
 			}
 
 			divide(grid.stream().map(o -> o.subList(0, splitIndex)).toList(), gridObj);
-			if (remainingWidth > splitIndex + 2) {
-				divide(grid.stream().map(o -> o.subList(splitIndex + 2, remainingHeight)).toList(), gridObj);
-			}
+			divide(grid.stream().map(o -> o.subList(splitIndex + 2, Math.max(splitIndex + 2, remainingHeight))).toList(),
+					gridObj);
 		} else {
 			if (remainingWidth <= 2) {
 				return;
@@ -76,9 +66,7 @@ public class RecursiveDivisionMaze implements IMaze {
 			}
 
 			divide(grid.subList(0, splitIndex), gridObj);
-			if (remainingHeight > splitIndex + 2) {
-				divide(grid.subList(splitIndex + 2, remainingWidth), gridObj);
-			}
+			divide(grid.subList(splitIndex + 2, Math.max(splitIndex + 2, remainingWidth)), gridObj);
 		}
 	}
 
