@@ -15,16 +15,12 @@ public class RandomMaze implements IMaze {
 	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
 		for (List<Piece> colPieceArr : grid) {
 			for (Piece curPiece : colPieceArr) {
-				if (!MazeUtils.isEmptyPiece(curPiece)) {
-					continue;
-				}
-
 				double WALL_PERCENTAGE_UNORM = 0.275d;
 				if (WALL_PERCENTAGE_UNORM < Math.random()) {
 					continue;
 				}
 
-				curPiece.setType(Piece.Type.Wall);
+				MazeUtils.setPieceToWallIfEmpty(curPiece);
 			}
 		}
 

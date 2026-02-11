@@ -4,6 +4,7 @@ import com.app.algorithms.*;
 import com.app.mazes.IMaze;
 import com.app.mazes.Maze;
 import com.app.mazes.RandomMaze;
+import com.app.mazes.RecursiveDivisionMaze;
 import com.app.mazes.StarMaze;
 import com.app.Settings;
 
@@ -27,7 +28,7 @@ public class ContentButtons extends JPanel {
 	private SearchAlgorithm selectedAlgorithm = SearchAlgorithm.BreadthFirst;
 	private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy(),
 			new DepthFirst() };
-	private final IMaze[] mazes = { new RandomMaze(), new StarMaze() };
+	private final IMaze[] mazes = { new RandomMaze(), new StarMaze(), new RecursiveDivisionMaze() };
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -99,12 +100,16 @@ public class ContentButtons extends JPanel {
 		ArrayList<JButton> mazesList = new ArrayList<>();
 		JButton button;
 
-		button = new JButton("Random maze");
+		button = new JButton("Random Maze");
 		button.addActionListener(o -> submitMaze(Maze.Random));
 		mazesList.add(button);
 
-		button = new JButton("Star Pattern");
-		button.addActionListener(o -> submitMaze(Maze.Star));
+		// button = new JButton("Star Pattern");
+		// button.addActionListener(o -> submitMaze(Maze.Star));
+		// mazesList.add(button);
+
+		button = new JButton("Recursive Maze");
+		button.addActionListener(o -> submitMaze(Maze.RecursiveDevision));
 		mazesList.add(button);
 
 		mazesMenu = new MenuConstructor(this, rootButton, mazesList, null);
@@ -117,9 +122,14 @@ public class ContentButtons extends JPanel {
 		}
 
 		executor.submit(() -> {
-			drawGrid.clearBoard();
-			matching.get().generateMaze(drawGrid.gridPieces, drawGrid);
+			try {
+				drawGrid.clearBoard();
+				matching.get().generateMaze(drawGrid.gridPieces, drawGrid);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
+
 	}
 
 	public void algorithmsDropdownMenu(JButton rootButton) {
