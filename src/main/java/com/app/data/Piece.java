@@ -11,7 +11,28 @@ public class Piece {
 	// the piece type that the piece starts from, if the algorithm is bidirectional
 	// it will
 	// have 2 start types (start piece and end piece)
+
+	// #region bidirectional
+
 	protected Type startType;
+
+	// #endregion bidirectional
+
+	// #region animation
+
+	/**
+	 * Immediately set the type of the piece to the current type and start next
+	 * animation if types different
+	 */
+	protected boolean immediatelySetType;
+	/**
+	 * Used in animations, if [type] != [previousType] then animation is going on
+	 */
+	protected Type previousType;
+	protected int currentAnimationPassedMilli = 0;
+	protected int animationLengthMilli = 3000;
+
+	// #endregion animation
 
 	public Piece(int x, int y) {
 		this.x = x;
@@ -49,6 +70,36 @@ public class Piece {
 	public void setStartType(Type type) {
 		assert startType == Type.Start || startType == Type.End;
 		this.startType = type;
+	}
+
+	public boolean isImmediatelySetType() {
+		return immediatelySetType;
+	}
+
+	public int getCurrentAnimationPassedMilli() {
+		return currentAnimationPassedMilli;
+	}
+
+	public void setCurrentAnimationPassedMilli(int currentAnimationPassedMilli) {
+		this.currentAnimationPassedMilli = currentAnimationPassedMilli;
+	}
+
+	public int getAnimationLengthMilli() {
+		return animationLengthMilli;
+	}
+
+	public void setAnimationLengthMilli(int animationLengthMilli) {
+		this.animationLengthMilli = animationLengthMilli;
+	}
+
+	public Type getPreviousType() {
+		return previousType;
+	}
+
+	public void notifyAnimationFinished() {
+		this.previousType = type;
+		this.immediatelySetType = false;
+		this.currentAnimationPassedMilli = 0;
 	}
 
 	private static Color getColor(Type type) {

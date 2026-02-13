@@ -145,7 +145,6 @@ public class ContentButtons extends JPanel {
 				e.printStackTrace();
 			}
 		});
-
 	}
 
 	public void algorithmsDropdownMenu(JButton rootButton) {

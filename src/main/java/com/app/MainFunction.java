@@ -1,12 +1,11 @@
 package com.app;
 
+import javax.swing.JFrame;
+
 import com.app.ui.ContentButtons;
 import com.app.ui.DrawGrid;
 
-import javax.swing.*;
-
 public class MainFunction {
-
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Pathfinding");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

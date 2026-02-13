@@ -12,56 +12,162 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import com.app.Settings;
+import com.app.animations.AnimatorNew;
 import com.app.data.Piece;
-import com.app.data.QueuePiece;
 
-public class DrawGrid extends JPanel {
-	protected List<List<Piece>> gridPieces = new ArrayList<>();
+public class DrawGrid extends JPanel implements IDrawGrid {
+	public List<List<Piece>> gridPieces = new ArrayList<>();
 	protected Piece startPiece;
 	protected Piece endPiece;
 
 	private boolean gridDrawn = false;
 
+	/**
+	 * Draw pieces in [piecesForRepainting] on next [paintComponent] call completing
+	 * all animations instantly
+	 */
+	private boolean redrawSkipAnimations;
 	private Piece wasPreviousPieceUnique; // by unique it means start or end position, because when you hold the left
-														// click and move the mouse the start position has to move with it
 	public List<Piece> piecesForRepainting = new CopyOnWriteArrayList<>();
+	private long timeSinceLastRepaint = System.currentTimeMillis();
+
+	private final Timer timer;
 
 	public DrawGrid() {
 		setLayout(null);
 		setBounds(Settings.GRID_OFFSET_X, Settings.GRID_OFFSET_Y, Settings.GRID_WID * getRectWid() + 1,
 				Settings.GRID_HEI * getRectHei() + 1);
+
+		redrawSkipAnimations = true;
+		timer = new Timer(16, e -> {
+			if (!piecesForRepainting.isEmpty()) {
+				this.repaint();
+			}
+		});
+		timer.setRepeats(true);
+		timer.start();
 	}
 
 	@Override
+	public void addPiecesForRepainting(Piece... pieces) {
+		piecesForRepainting.addAll(List.of(pieces));
+	}
+
+	@Override
+	public void redrawAllImmediate() {
+		this.piecesForRepainting.clear();
+		this.piecesForRepainting.addAll(piecesForRepainting);
+		redrawSkipAnimations = true;
+	}
+
+	/**
+	 * TODO only a single thread should be able to enter [paintComponent] at a time
+	 */
+	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g;
 		var piecesCopy = piecesForRepainting.stream().toList();
-		piecesForRepainting.removeAll(piecesCopy);
 
-		if (!piecesCopy.isEmpty()) {
-			Graphics2D g2d = (Graphics2D) g;
+		var curTime = System.currentTimeMillis();
+
+		if (redrawSkipAnimations) {
 			for (Piece curPiece : piecesCopy) {
-				g2d.setColor(curPiece.getColor());
-				g2d.fill(curPiece.getRect());
-				g2d.setColor(Color.black);
-				g2d.draw(curPiece.getRect());
+				piecesForRepainting.clear();
+				repaintPiece(g2d, curPiece);
+
+				curPiece.notifyAnimationFinished();
 			}
-		} else if (!gridDrawn) {
-			drawGrid((Graphics2D) g);
-			gridDrawn = true;
-			drawStartPositions();
+			redrawSkipAnimations = false;
 		} else {
-			Graphics2D g2d = (Graphics2D) g;
-			for (List<Piece> pieces : gridPieces)
-				for (Piece piece : pieces) {
-					g2d.setColor(piece.getColor());
-					g2d.fill(piece.getRect());
-					g2d.setColor(Color.black);
-					g2d.draw(piece.getRect());
-				}
+			for (Piece curPiece : piecesCopy) {
+				var test = AnimatorNew.ripple(curPiece);
+			}
 		}
+
+		timeSinceLastRepaint = curTime;
+
+		// if (!piecesCopy.isEmpty()) {
+		// Graphics2D g2d = (Graphics2D) g;
+		// for (Piece curPiece : piecesCopy) {
+		// g2d.setColor(curPiece.getColor());
+		// g2d.fill(curPiece.getRect());
+		// g2d.setColor(Color.black);
+		// g2d.draw(curPiece.getRect());
+		// }
+		// } else if (!gridDrawn) {
+		// drawGrid((Graphics2D) g);
+		// gridDrawn = true;
+		// drawStartPositions();
+		// } else {
+		// Graphics2D g2d = (Graphics2D) g;
+		// for (List<Piece> pieces : gridPieces)
+		// for (Piece piece : pieces) {
+		// g2d.setColor(piece.getColor());
+		// g2d.fill(piece.getRect());
+		// g2d.setColor(Color.black);
+		// g2d.draw(piece.getRect());
+		// }
+		// }
+	}
+
+	private void repaintPiece(Graphics2D g2d, Piece curPiece) {
+		g2d.setColor(curPiece.getColor());
+		g2d.fill(curPiece.getRect());
+		g2d.setColor(Color.black);
+		g2d.draw(curPiece.getRect());
+	}
+
+	public void drawShortestPath(List<Piece> path) {
+		var expectedAlgorithm = ContentButtons.getRunningAlgorithm();
+		if (expectedAlgorithm == null) {
+			return;
+		}
+		for (int i = 1; i < path.size(); i++) {
+			if (expectedAlgorithm != ContentButtons.getRunningAlgorithm()) {
+				return;
+			}
+
+			var curPiece = path.get(i);
+
+			gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);// display the shortest
+																																	// path type
+			piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
+			repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID,
+					Settings.RECT_WID);
+			try {
+				// noinspection BusyWait
+				Thread.sleep(Settings.SHORTEST_VISUALIZE_SPEED);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void clearBoard() {
+		for (List<Piece> colPieceArr : gridPieces) {
+			for (Piece curPiece : colPieceArr)
+				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath
+						|| curPiece.getType() == Piece.Type.Wall)
+					curPiece.setType(Piece.Type.Empty);
+			piecesForRepainting.addAll(colPieceArr);
+		}
+		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
+				Settings.GRID_HEI * Settings.RECT_WID);
+	}
+
+	public void clearPath() {
+		for (List<Piece> colPieceArr : gridPieces) {
+			for (Piece curPiece : colPieceArr)
+				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
+					curPiece.setType(Piece.Type.Empty);
+			piecesForRepainting.addAll(colPieceArr);
+		}
+		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
+				Settings.GRID_HEI * Settings.RECT_WID);
 	}
 
 	private void drawStartPositions() {
@@ -71,10 +177,16 @@ public class DrawGrid extends JPanel {
 		endPiece.setType(Piece.Type.End);
 		JPanel startPPanel = new JPanel();
 		JPanel endPPanel = new JPanel();
-		add(endPPanel);
-		add(startPPanel);
-		endPPanel.setBackground(Color.orange);
-		startPPanel.setBackground(startPiece.getColor());
+		// add(endPPanel);
+		// add(startPPanel);
+
+		// endPPanel.setBackground(Color.orange);
+		// startPPanel.setBackground(startPiece.getColor());
+
+		// var animator = new Animator(startPPanel,
+		// AnimatorHelper.calculateCenter(startPiece),
+		// AnimatorHelper.calculateEndPos(startPiece), 3000);
+		// animator.ripple();
 	}
 
 	private void drawGrid(Graphics2D g) {
@@ -94,56 +206,6 @@ public class DrawGrid extends JPanel {
 			gridPieces.add(tempArr);
 		}
 		new GridListeners(gridPieces, this);
-	}
-
-	public void drawShortestPath(List<QueuePiece> path) {
-		var expectedAlgorithm = ContentButtons.getRunningAlgorithm();
-		if (expectedAlgorithm == null) {
-			return;
-		}
-
-		for (int i = 1; i < path.size(); i++) {
-			if (expectedAlgorithm != ContentButtons.getRunningAlgorithm()) {
-				return;
-			}
-
-			QueuePiece curPiece = path.get(i);
-
-			gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);// display the shortest
-																																	// path type
-			piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
-			repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID,
-					Settings.RECT_WID);
-			try {
-				// noinspection BusyWait
-				Thread.sleep(Settings.SHORTEST_VISUALIZE_SPEED);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	protected void clearBoard() {
-		for (List<Piece> colPieceArr : gridPieces) {
-			for (Piece curPiece : colPieceArr)
-				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath
-						|| curPiece.getType() == Piece.Type.Wall)
-					curPiece.setType(Piece.Type.Empty);
-			piecesForRepainting.addAll(colPieceArr);
-		}
-		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
-				Settings.GRID_HEI * Settings.RECT_WID);
-	}
-
-	protected void clearPath() {
-		for (List<Piece> colPieceArr : gridPieces) {
-			for (Piece curPiece : colPieceArr)
-				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
-					curPiece.setType(Piece.Type.Empty);
-			piecesForRepainting.addAll(colPieceArr);
-		}
-		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
-				Settings.GRID_HEI * Settings.RECT_WID);
 	}
 
 	public int getRectWid() {
@@ -197,6 +259,9 @@ public class DrawGrid extends JPanel {
 			piecePressed(e);
 		}
 
+		/**
+		 * TODO move this out
+		 */
 		private void piecePressed(MouseEvent e) {
 			Piece pressed = PressedPiece(e.getX(), e.getY());
 			if (e.getButton() != 1 && !mouseHeld || pressed == null)
@@ -221,6 +286,9 @@ public class DrawGrid extends JPanel {
 			lastPressed = pressed;
 		}
 
+		/**
+		 * TODO move this out
+		 */
 		// if the piece is empty and is being pressed do the following function
 		private void ifPieceEmpty(Piece pressed) {
 			if (wasPreviousPieceUnique == null) {
