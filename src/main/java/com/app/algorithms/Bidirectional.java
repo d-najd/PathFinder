@@ -75,7 +75,7 @@ public class Bidirectional implements ISearchAlgorithm {
 					Collections.reverse(path);
 					path.addFirst(new QueuePiece(-1, -1));
 					path.removeLast();
-					gridObj.drawShortestPath(path);
+					gridObj.drawShortestPath(path.stream().map(o -> (Piece) o).toList());
 					return;
 				}
 			}

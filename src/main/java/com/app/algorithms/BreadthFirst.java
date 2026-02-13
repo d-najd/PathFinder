@@ -68,7 +68,8 @@ public class BreadthFirst implements ISearchAlgorithm {
 						throw new RuntimeException(e);
 					}
 				} else if (checkedPiece.getType() == Piece.Type.End) {
-					gridObj.drawShortestPath(dequeuedPiece.getPath());
+					var path = dequeuedPiece.getPath().stream().map(o -> (Piece)o).toList(); // this is fucking stupid
+					gridObj.drawShortestPath(path);
 					return;
 				}
 			}

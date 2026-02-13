@@ -66,7 +66,7 @@ public class Animator {
     }
 
     public void ripple(){
-        keyframes = RippleAnimation.getKeyFrames(this);
+        // keyframes = RippleAnimation.getKeyFrames(this);
         keyframeAnimator();
     }
 
