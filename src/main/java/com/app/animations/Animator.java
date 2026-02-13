@@ -166,15 +166,6 @@ public class Animator {
         return point;
     }
 
-    public static int calculateProgress(int startValue, int endValue, double fraction) {
-        int value = 0;
-        int distance = endValue - startValue;
-        value = (int)Math.round((double)distance * fraction);
-        value += startValue;
-
-        return value;
-    }
-
     public static Dimension calculateProgress(Dimension startSize, Dimension targetSize, double progress) {
         Dimension size = new Dimension();
         if (startSize != null && targetSize != null) {
@@ -182,6 +173,15 @@ public class Animator {
             size.height = calculateProgress(startSize.height, targetSize.height, progress);
         }
         return size;
+    }
+
+    public static int calculateProgress(int startValue, int endValue, double fraction) {
+        int value = 0;
+        int distance = endValue - startValue;
+        value = (int)Math.round((double)distance * fraction);
+        value += startValue;
+
+        return value;
     }
 }
 

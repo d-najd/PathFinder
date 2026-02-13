@@ -29,7 +29,7 @@ public class Piece {
 	 * Used in animations, if [type] != [previousType] then animation is going on
 	 */
 	protected Type previousType;
-	protected int currentAnimationPassedMilli = 0;
+	protected double animationPercentage = 0;
 	protected int animationLengthMilli = 3000;
 
 	// #endregion animation
@@ -76,12 +76,18 @@ public class Piece {
 		return immediatelySetType;
 	}
 
-	public int getCurrentAnimationPassedMilli() {
-		return currentAnimationPassedMilli;
+	public void setImmediatelySetType(boolean immediatelySetType) {
+		this.immediatelySetType = immediatelySetType;
 	}
 
-	public void setCurrentAnimationPassedMilli(int currentAnimationPassedMilli) {
-		this.currentAnimationPassedMilli = currentAnimationPassedMilli;
+	public double getAnimationPercentage() {
+		return animationPercentage;
+	}
+
+	public void setAnimationPercentage(double animationPercentage) {
+		assert animationPercentage >= 0 && animationPercentage <= 1.00;
+
+		this.animationPercentage = animationPercentage;
 	}
 
 	public int getAnimationLengthMilli() {
@@ -99,7 +105,7 @@ public class Piece {
 	public void notifyAnimationFinished() {
 		this.previousType = type;
 		this.immediatelySetType = false;
-		this.currentAnimationPassedMilli = 0;
+		this.animationPercentage = 0.00;
 	}
 
 	private static Color getColor(Type type) {

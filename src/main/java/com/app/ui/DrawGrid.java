@@ -43,9 +43,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 
 		redrawSkipAnimations = true;
 		timer = new Timer(16, e -> {
-			if (!piecesForRepainting.isEmpty()) {
-				this.repaint();
-			}
+			this.repaint();
 		});
 		timer.setRepeats(true);
 		timer.start();
@@ -71,47 +69,40 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		var piecesCopy = piecesForRepainting.stream().toList();
-
 		var curTime = System.currentTimeMillis();
 
 		if (redrawSkipAnimations) {
 			for (Piece curPiece : piecesCopy) {
 				piecesForRepainting.clear();
 				repaintPiece(g2d, curPiece);
-
 				curPiece.notifyAnimationFinished();
 			}
 			redrawSkipAnimations = false;
 		} else {
 			for (Piece curPiece : piecesCopy) {
-				var test = AnimatorNew.ripple(curPiece);
+				var elapsedTime = timeSinceLastRepaint - curTime;
+				var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime / curPiece.getAnimationLengthMilli());
+
+				if (curPiece.isImmediatelySetType()) {
+					// If piece gets modified to something while it's painting, will immediatelly finish current anim and start with the new type
+					curPiece.setAnimationPercentage(0);
+					curPiece.setImmediatelySetType(false);
+					repaintPiece(g2d, curPiece);
+				}
+				if (newPercentage >= 1.00) {
+					piecesForRepainting.remove(curPiece);
+					repaintPiece(g2d, curPiece);
+					curPiece.notifyAnimationFinished();
+				} else {
+					curPiece.setAnimationPercentage(newPercentage);
+					var animationRect = AnimatorNew.ripple(curPiece);
+					g2d.setColor(curPiece.getColor());
+					g2d.fill(animationRect);
+				}
 			}
 		}
 
 		timeSinceLastRepaint = curTime;
-
-		// if (!piecesCopy.isEmpty()) {
-		// Graphics2D g2d = (Graphics2D) g;
-		// for (Piece curPiece : piecesCopy) {
-		// g2d.setColor(curPiece.getColor());
-		// g2d.fill(curPiece.getRect());
-		// g2d.setColor(Color.black);
-		// g2d.draw(curPiece.getRect());
-		// }
-		// } else if (!gridDrawn) {
-		// drawGrid((Graphics2D) g);
-		// gridDrawn = true;
-		// drawStartPositions();
-		// } else {
-		// Graphics2D g2d = (Graphics2D) g;
-		// for (List<Piece> pieces : gridPieces)
-		// for (Piece piece : pieces) {
-		// g2d.setColor(piece.getColor());
-		// g2d.fill(piece.getRect());
-		// g2d.setColor(Color.black);
-		// g2d.draw(piece.getRect());
-		// }
-		// }
 	}
 
 	private void repaintPiece(Graphics2D g2d, Piece curPiece) {
