@@ -42,9 +42,12 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				Settings.GRID_HEI * getRectHei() + 1);
 
 		redrawSkipAnimations = true;
+		piecesForRepainting.addAll(gridPieces.stream().flatMap(List::stream).toList());
+
 		timer = new Timer(16, e -> {
 			this.repaint();
 		});
+
 		timer.setRepeats(true);
 		timer.start();
 	}
@@ -68,10 +71,13 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		var piecesCopy = piecesForRepainting.stream().toList();
+		var piecesCopy = gridPieces.stream().flatMap(List::stream).toList();
 		var curTime = System.currentTimeMillis();
 
+		System.out.println("Hello");
+
 		if (redrawSkipAnimations) {
+			System.out.println("Hello2");
 			for (Piece curPiece : piecesCopy) {
 				piecesForRepainting.clear();
 				repaintPiece(g2d, curPiece);
@@ -84,7 +90,9 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime / curPiece.getAnimationLengthMilli());
 
 				if (curPiece.isImmediatelySetType()) {
-					// If piece gets modified to something while it's painting, will immediatelly finish current anim and start with the new type
+					// If piece gets modified to something while it's painting, will immediatelly
+					// finish current anim and start with the new type
+					piecesForRepainting.remove(curPiece);
 					curPiece.setAnimationPercentage(0);
 					curPiece.setImmediatelySetType(false);
 					repaintPiece(g2d, curPiece);
