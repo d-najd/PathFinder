@@ -93,6 +93,9 @@ public class RecursiveDivisionMaze implements IMaze {
 		return determineSplitTypeWeighted(width, height);
 	}
 
+	/**
+	 * Weighted based on the remaining [width]/[height] and [horizontalSplitWeight]
+	 */
 	protected final SplitType determineSplitTypeWeighted(int width, int height) {
 		if (width <= 2) {
 			return SplitType.Vertical;
@@ -114,6 +117,9 @@ public class RecursiveDivisionMaze implements IMaze {
 		}
 	}
 
+	/**
+	 * Weighted on [horizontalSplitWeight]
+	 */
 	protected final SplitType determineSplitTypeUnWeighted(int width, int height) {
 		if (width <= 2) {
 			return SplitType.Vertical;
