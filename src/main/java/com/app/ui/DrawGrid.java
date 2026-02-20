@@ -77,6 +77,16 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		var piecesCopy = piecesForRepainting.stream().toList();
 		var curTime = System.currentTimeMillis();
 
+		// var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o ->
+		// !piecesForRepainting.contains(o))
+		// .toList();
+
+		var otherPieces = gridPieces.stream().flatMap(List::stream)
+				.toList();
+		for (Piece curpiece : otherPieces) {
+			repaintPiece(g2d, curpiece, true);
+		}
+
 		// var otherPieces = gridPieces.stream().flatMap(List::stream).toList();
 		// for (Piece curpiece : otherPieces) {
 		// repaintPiece(g2d, curpiece, true);
@@ -107,25 +117,20 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 					curPiece.setImmediatelySetType(false);
 					repaintPiece(g2d, curPiece);
 				} else if (newPercentage > 1.00) {
-					System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y FINISHED");
+					// System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y FINISHED");
 					piecesForRepainting.remove(curPiece);
 					repaintPiece(g2d, curPiece);
 					curPiece.notifyAnimationFinished();
 				} else {
-					System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y " + newPercentage);
+					// System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y " +
+					// newPercentage);
 					curPiece.setAnimationPercentage(newPercentage);
 					var animationRect = AnimatorNew.ripple(curPiece);
 					g2d.setColor(curPiece.getColor());
 					g2d.fill(animationRect);
 				}
 			}
-			System.out.print(curTime);
-		}
-
-		var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o -> !piecesForRepainting.contains(o))
-				.toList();
-		for (Piece curpiece : otherPieces) {
-			repaintPiece(g2d, curpiece, false);
+			// System.out.print(curTime);
 		}
 
 		timeSinceLastRepaint = curTime;
@@ -157,8 +162,9 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 			gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);// display the shortest
 																																	// path type
 			piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
-			repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() * Settings.RECT_WID, Settings.RECT_WID,
-					Settings.RECT_WID);
+			// repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() *
+			// Settings.RECT_WID, Settings.RECT_WID,
+			// Settings.RECT_WID);
 			try {
 				// noinspection BusyWait
 				Thread.sleep(Settings.SHORTEST_VISUALIZE_SPEED);

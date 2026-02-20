@@ -30,7 +30,7 @@ public class Piece {
 	 */
 	protected Type previousType;
 	protected double animationPercentage = 0;
-	protected int animationLengthMilli = 3000;
+	protected int animationLengthMilli = 150;
 
 	// #endregion animation
 
@@ -48,6 +48,10 @@ public class Piece {
 	}
 
 	public Color getPreviousColor() {
+		if (previousType == null) {
+			return getColor();
+		}
+
 		return getColor(this.previousType);
 	}
 

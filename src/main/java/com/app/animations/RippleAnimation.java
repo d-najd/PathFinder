@@ -7,7 +7,7 @@ public class RippleAnimation {
 	public static ArrayList<KeyFrame> getKeyframes(Rectangle from, Rectangle to) {
 		ArrayList<KeyFrame> keyframes = new ArrayList<>();
 		keyframes.add(new KeyFrame(0.0, from));
-		keyframes.add(_75(to));
+		// keyframes.add(_75(to));
 		keyframes.add(new KeyFrame(1.0, to));
 
 		return keyframes;
