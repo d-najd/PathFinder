@@ -23,8 +23,6 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	protected Piece startPiece;
 	protected Piece endPiece;
 
-	private boolean gridDrawn = false;
-
 	/**
 	 * Draw pieces in [piecesForRepainting] on next [paintComponent] call completing
 	 * all animations instantly
@@ -40,6 +38,9 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		setLayout(null);
 		setBounds(Settings.GRID_OFFSET_X, Settings.GRID_OFFSET_Y, Settings.GRID_WID * getRectWid() + 1,
 				Settings.GRID_HEI * getRectHei() + 1);
+
+		createGridPieces();
+		setStartPositions();
 
 		redrawSkipAnimations = true;
 		piecesForRepainting.addAll(gridPieces.stream().flatMap(List::stream).toList());
@@ -74,39 +75,38 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		var piecesCopy = gridPieces.stream().flatMap(List::stream).toList();
 		var curTime = System.currentTimeMillis();
 
-		// if (redrawSkipAnimations) {
-		// for (Piece curPiece : piecesCopy) {
-		// piecesForRepainting.clear();
-		// repaintPiece(g2d, curPiece);
-		// curPiece.notifyAnimationFinished();
-		// }
-		// redrawSkipAnimations = false;
-		// } else {
-		// for (Piece curPiece : piecesCopy) {
-		// var elapsedTime = timeSinceLastRepaint - curTime;
-		// var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime /
-		// curPiece.getAnimationLengthMilli());
-		//
-		// if (curPiece.isImmediatelySetType()) {
-		// // If piece gets modified to something while it's painting, will immediatelly
-		// // finish current anim and start with the new type
-		// piecesForRepainting.remove(curPiece);
-		// curPiece.setAnimationPercentage(0);
-		// curPiece.setImmediatelySetType(false);
-		// repaintPiece(g2d, curPiece);
-		// }
-		// if (newPercentage >= 1.00) {
-		// piecesForRepainting.remove(curPiece);
-		// repaintPiece(g2d, curPiece);
-		// curPiece.notifyAnimationFinished();
-		// } else {
-		// curPiece.setAnimationPercentage(newPercentage);
-		// var animationRect = AnimatorNew.ripple(curPiece);
-		// g2d.setColor(curPiece.getColor());
-		// g2d.fill(animationRect);
-		// }
-		// }
-		// }
+		if (redrawSkipAnimations) {
+			for (Piece curPiece : piecesCopy) {
+				piecesForRepainting.clear();
+				repaintPiece(g2d, curPiece);
+				curPiece.notifyAnimationFinished();
+			}
+			redrawSkipAnimations = false;
+		} else {
+			for (Piece curPiece : piecesCopy) {
+				var elapsedTime = timeSinceLastRepaint - curTime;
+				var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime / curPiece.getAnimationLengthMilli());
+
+				if (curPiece.isImmediatelySetType()) {
+					// If piece gets modified to something while it's painting, will immediatelly
+					// finish current anim and start with the new type
+					piecesForRepainting.remove(curPiece);
+					curPiece.setAnimationPercentage(0);
+					curPiece.setImmediatelySetType(false);
+					repaintPiece(g2d, curPiece);
+				}
+				if (newPercentage >= 1.00) {
+					piecesForRepainting.remove(curPiece);
+					repaintPiece(g2d, curPiece);
+					curPiece.notifyAnimationFinished();
+				} else {
+					curPiece.setAnimationPercentage(newPercentage);
+					var animationRect = AnimatorNew.ripple(curPiece);
+					g2d.setColor(curPiece.getColor());
+					g2d.fill(animationRect);
+				}
+			}
+		}
 
 		for (Piece curPiece : piecesCopy) {
 			piecesForRepainting.clear();
@@ -173,26 +173,14 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				Settings.GRID_HEI * Settings.RECT_WID);
 	}
 
-	private void drawStartPositions() {
+	private void setStartPositions() {
 		startPiece = gridPieces.getFirst().getFirst();
 		startPiece.setType(Piece.Type.Start);
 		endPiece = gridPieces.get(Settings.GRID_WID - 1).get(Settings.GRID_HEI - 1);
 		endPiece.setType(Piece.Type.End);
-		JPanel startPPanel = new JPanel();
-		JPanel endPPanel = new JPanel();
-		// add(endPPanel);
-		// add(startPPanel);
-
-		// endPPanel.setBackground(Color.orange);
-		// startPPanel.setBackground(startPiece.getColor());
-
-		// var animator = new Animator(startPPanel,
-		// AnimatorHelper.calculateCenter(startPiece),
-		// AnimatorHelper.calculateEndPos(startPiece), 3000);
-		// animator.ripple();
 	}
 
-	private void drawGrid(Graphics2D g) {
+	private void createGridPieces() {
 		if (!gridPieces.isEmpty())
 			System.out.println("[ERROR] there are already pieces when creating the grid wtf?");
 
@@ -200,10 +188,6 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 			ArrayList<Piece> tempArr = new ArrayList<>();
 			for (int y = 0; y < Settings.GRID_HEI; y++) {
 				var newPiece = new Piece(x, y);
-				g.setColor(Color.WHITE);
-				g.fill(newPiece.getRect());
-				g.setColor(Color.black);
-				g.draw(newPiece.getRect());
 				tempArr.add(newPiece);
 			}
 			gridPieces.add(tempArr);
