@@ -74,40 +74,44 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		var piecesCopy = gridPieces.stream().flatMap(List::stream).toList();
 		var curTime = System.currentTimeMillis();
 
-		System.out.println("Hello");
+		// if (redrawSkipAnimations) {
+		// for (Piece curPiece : piecesCopy) {
+		// piecesForRepainting.clear();
+		// repaintPiece(g2d, curPiece);
+		// curPiece.notifyAnimationFinished();
+		// }
+		// redrawSkipAnimations = false;
+		// } else {
+		// for (Piece curPiece : piecesCopy) {
+		// var elapsedTime = timeSinceLastRepaint - curTime;
+		// var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime /
+		// curPiece.getAnimationLengthMilli());
+		//
+		// if (curPiece.isImmediatelySetType()) {
+		// // If piece gets modified to something while it's painting, will immediatelly
+		// // finish current anim and start with the new type
+		// piecesForRepainting.remove(curPiece);
+		// curPiece.setAnimationPercentage(0);
+		// curPiece.setImmediatelySetType(false);
+		// repaintPiece(g2d, curPiece);
+		// }
+		// if (newPercentage >= 1.00) {
+		// piecesForRepainting.remove(curPiece);
+		// repaintPiece(g2d, curPiece);
+		// curPiece.notifyAnimationFinished();
+		// } else {
+		// curPiece.setAnimationPercentage(newPercentage);
+		// var animationRect = AnimatorNew.ripple(curPiece);
+		// g2d.setColor(curPiece.getColor());
+		// g2d.fill(animationRect);
+		// }
+		// }
+		// }
 
-		if (redrawSkipAnimations) {
-			System.out.println("Hello2");
-			for (Piece curPiece : piecesCopy) {
-				piecesForRepainting.clear();
-				repaintPiece(g2d, curPiece);
-				curPiece.notifyAnimationFinished();
-			}
-			redrawSkipAnimations = false;
-		} else {
-			for (Piece curPiece : piecesCopy) {
-				var elapsedTime = timeSinceLastRepaint - curTime;
-				var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime / curPiece.getAnimationLengthMilli());
-
-				if (curPiece.isImmediatelySetType()) {
-					// If piece gets modified to something while it's painting, will immediatelly
-					// finish current anim and start with the new type
-					piecesForRepainting.remove(curPiece);
-					curPiece.setAnimationPercentage(0);
-					curPiece.setImmediatelySetType(false);
-					repaintPiece(g2d, curPiece);
-				}
-				if (newPercentage >= 1.00) {
-					piecesForRepainting.remove(curPiece);
-					repaintPiece(g2d, curPiece);
-					curPiece.notifyAnimationFinished();
-				} else {
-					curPiece.setAnimationPercentage(newPercentage);
-					var animationRect = AnimatorNew.ripple(curPiece);
-					g2d.setColor(curPiece.getColor());
-					g2d.fill(animationRect);
-				}
-			}
+		for (Piece curPiece : piecesCopy) {
+			piecesForRepainting.clear();
+			repaintPiece(g2d, curPiece);
+			curPiece.notifyAnimationFinished();
 		}
 
 		timeSinceLastRepaint = curTime;
