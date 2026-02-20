@@ -11,16 +11,22 @@ import com.app.ui.IDrawGrid;
 public class RecursiveDivisionMaze implements IMaze {
 	@Override
 	public Maze currentMaze() {
-		return Maze.RecursiveDevision;
+		return Maze.RecursiveDivision;
+	}
+
+	/**
+	 * Percentage at which horizontal split is more likely to be picked
+	 */
+	protected float horizontalSplitWeight() {
+		return 0.5f;
 	}
 
 	@Override
-	public void generateMaze(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
+	public final void generateMaze(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
 		divide(grid, gridObj, currentMaze);
-		// MazeUtils.repaintAll(grid, gridObj);
 	}
 
-	private void divide(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
+	private final void divide(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
 		if (grid.size() == 0) {
 			return;
 		}
@@ -83,7 +89,11 @@ public class RecursiveDivisionMaze implements IMaze {
 	 * remaining, there is more width remaining
 	 * [SplitType.Horizontal] is more likely to be picked and vice versa
 	 */
-	private static SplitType determineSplitType(int width, int height) {
+	protected SplitType determineSplitType(int width, int height) {
+		return determineSplitTypeWeighted(width, height);
+	}
+
+	protected final SplitType determineSplitTypeWeighted(int width, int height) {
 		if (width <= 2) {
 			return SplitType.Vertical;
 		}
@@ -92,7 +102,11 @@ public class RecursiveDivisionMaze implements IMaze {
 			return SplitType.Horizontal;
 		}
 
-		var widthUNormPercentage = (float) width / (width + height);
+		var weighedWidth = width * horizontalSplitWeight();
+		var weighedHeight = height * (1.0f - horizontalSplitWeight());
+
+		var widthUNormPercentage = (float) weighedWidth / (weighedWidth +
+				weighedHeight);
 		if (new Random().nextFloat() < widthUNormPercentage) {
 			return SplitType.Vertical;
 		} else {
@@ -100,7 +114,23 @@ public class RecursiveDivisionMaze implements IMaze {
 		}
 	}
 
-	private enum SplitType {
+	protected final SplitType determineSplitTypeUnWeighted(int width, int height) {
+		if (width <= 2) {
+			return SplitType.Vertical;
+		}
+
+		if (height <= 2) {
+			return SplitType.Horizontal;
+		}
+
+		if (new Random().nextFloat() < horizontalSplitWeight()) {
+			return SplitType.Horizontal;
+		} else {
+			return SplitType.Vertical;
+		}
+	}
+
+	protected enum SplitType {
 		Vertical,
 		Horizontal
 	}

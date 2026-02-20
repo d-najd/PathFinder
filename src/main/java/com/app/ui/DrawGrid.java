@@ -65,9 +65,6 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		redrawSkipAnimations = true;
 	}
 
-	/**
-	 * TODO only a single thread should be able to enter [paintComponent] at a time
-	 */
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);

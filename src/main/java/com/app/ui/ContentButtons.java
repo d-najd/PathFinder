@@ -1,18 +1,27 @@
 package com.app.ui;
 
-import com.app.algorithms.*;
-import com.app.mazes.IMaze;
-import com.app.mazes.Maze;
-import com.app.mazes.RandomMaze;
-import com.app.mazes.RecursiveDivisionMaze;
-import com.app.mazes.StarMaze;
-import com.app.Settings;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import com.app.Settings;
+import com.app.algorithms.Bidirectional;
+import com.app.algorithms.BreadthFirst;
+import com.app.algorithms.DepthFirst;
+import com.app.algorithms.Greedy;
+import com.app.algorithms.ISearchAlgorithm;
+import com.app.algorithms.SearchAlgorithm;
+import com.app.mazes.IMaze;
+import com.app.mazes.Maze;
+import com.app.mazes.RandomMaze;
+import com.app.mazes.RecursiveDivisionMaze;
+import com.app.mazes.RecursiveDivisionMazeHorizontalSkew;
+import com.app.mazes.RecursiveDivisionMazeVerticalSkew;
+import com.app.mazes.StarMaze;
 
 public class ContentButtons extends JPanel {
 	private static SearchAlgorithm runningAlgorithm = null;
@@ -40,7 +49,8 @@ public class ContentButtons extends JPanel {
 	private SearchAlgorithm selectedAlgorithm = SearchAlgorithm.BreadthFirst;
 	private final ISearchAlgorithm[] searchAlgorithms = { new Bidirectional(), new BreadthFirst(), new Greedy(),
 			new DepthFirst() };
-	private final IMaze[] mazes = { new RandomMaze(), new StarMaze(), new RecursiveDivisionMaze() };
+	private final IMaze[] mazes = { new RandomMaze(), new StarMaze(), new RecursiveDivisionMaze(),
+			new RecursiveDivisionMazeVerticalSkew(), new RecursiveDivisionMazeHorizontalSkew() };
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -138,7 +148,15 @@ public class ContentButtons extends JPanel {
 		// mazesList.add(button);
 
 		button = new JButton("Recursive Maze");
-		button.addActionListener(o -> submitMaze(Maze.RecursiveDevision));
+		button.addActionListener(o -> submitMaze(Maze.RecursiveDivision));
+		mazesList.add(button);
+
+		button = new JButton("Recursive Maze Horizontal-Skew");
+		button.addActionListener(o -> submitMaze(Maze.RecursiveDivisionHorizontalSkew));
+		mazesList.add(button);
+
+		button = new JButton("Recursive Maze Vertical-Skew");
+		button.addActionListener(o -> submitMaze(Maze.RecursiveDivisionVerticalSkew));
 		mazesList.add(button);
 
 		mazesMenu = new MenuConstructor(this, rootButton, mazesList, null);
