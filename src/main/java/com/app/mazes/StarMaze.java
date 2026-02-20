@@ -13,7 +13,6 @@ public class StarMaze implements IMaze {
 
 	@Override
 	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
-
 		MazeUtils.repaintAll(grid, gridObj);
 	}
 
