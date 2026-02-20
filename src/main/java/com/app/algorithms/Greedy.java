@@ -78,12 +78,7 @@ public class Greedy implements ISearchAlgorithm {
 			var checkedPiece = grid.get(checkedQueuePiece.getX()).get(checkedQueuePiece.getY());
 			checkedPiece.setType(Piece.Type.Checked);
 
-			gridObj.addPiecesForRepainting(checkedQueuePiece);
-
-			// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-			// checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-			// gridObj.getRectHei());
-
+			gridObj.addPiecesForRepainting(checkedPiece);
 			try {
 				// noinspection BusyWait
 				Thread.sleep(Settings.VISUALIZE_SPEED);

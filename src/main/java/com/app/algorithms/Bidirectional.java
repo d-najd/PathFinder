@@ -49,11 +49,8 @@ public class Bidirectional implements ISearchAlgorithm {
 					checkedQueuePiece.setStartType(dequeuedPiece.getStartType());
 					queue.add(checkedQueuePiece);
 
-					gridObj.addPiecesForRepainting(checkedQueuePiece);
+					gridObj.addPiecesForRepainting(checkedPiece);
 
-					// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-					// checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-					// gridObj.getRectHei());
 					try {
 						// noinspection BusyWait
 						Thread.sleep(Settings.VISUALIZE_SPEED);
