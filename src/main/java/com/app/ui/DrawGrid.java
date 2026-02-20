@@ -7,17 +7,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.ToLongBiFunction;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import com.app.Settings;
-import com.app.animations.AnimatorNew;
+import com.app.animations.Animator;
 import com.app.data.Piece;
 
 public class DrawGrid extends JPanel implements IDrawGrid {
@@ -63,7 +61,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	@Override
 	public void redrawAllImmediate() {
 		this.piecesForRepainting.clear();
-		this.piecesForRepainting.addAll(gridPieces.stream().flatMap(List::stream).toList());
+		addPiecesForRepainting(gridPieces.stream().flatMap(List::stream).toArray(Piece[]::new));
 		redrawSkipAnimations = true;
 	}
 
@@ -77,24 +75,11 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		var piecesCopy = piecesForRepainting.stream().toList();
 		var curTime = System.currentTimeMillis();
 
-		// var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o ->
-		// !piecesForRepainting.contains(o))
-		// .toList();
-
-		var otherPieces = gridPieces.stream().flatMap(List::stream)
-				.toList();
+		var otherPieces = gridPieces.stream().flatMap(List::stream).toList();
 		for (Piece curpiece : otherPieces) {
 			repaintPiece(g2d, curpiece, true);
 		}
 
-		// var otherPieces = gridPieces.stream().flatMap(List::stream).toList();
-		// for (Piece curpiece : otherPieces) {
-		// repaintPiece(g2d, curpiece, true);
-		// }
-
-		// var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o ->
-		// !piecesForRepainting.contains(o))
-		// .toList();
 		if (redrawSkipAnimations) {
 			for (Piece curPiece : piecesCopy) {
 				piecesForRepainting.clear();
@@ -125,7 +110,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 					// System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y " +
 					// newPercentage);
 					curPiece.setAnimationPercentage(newPercentage);
-					var animationRect = AnimatorNew.ripple(curPiece);
+					var animationRect = Animator.ripple(curPiece);
 					g2d.setColor(curPiece.getColor());
 					g2d.fill(animationRect);
 				}
@@ -158,10 +143,9 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 			}
 
 			var curPiece = path.get(i);
-
 			gridPieces.get(curPiece.getX()).get(curPiece.getY()).setType(Piece.Type.DisplayingPath);// display the shortest
 																																	// path type
-			piecesForRepainting.add(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
+			addPiecesForRepainting(gridPieces.get(curPiece.getX()).get(curPiece.getY()));
 			// repaint(curPiece.getX() * Settings.RECT_WID, curPiece.getY() *
 			// Settings.RECT_WID, Settings.RECT_WID,
 			// Settings.RECT_WID);
@@ -176,25 +160,25 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 
 	public void clearBoard() {
 		for (List<Piece> colPieceArr : gridPieces) {
-			for (Piece curPiece : colPieceArr)
+			for (Piece curPiece : colPieceArr) {
 				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath
-						|| curPiece.getType() == Piece.Type.Wall)
+						|| curPiece.getType() == Piece.Type.Wall) {
 					curPiece.setType(Piece.Type.Empty);
-			piecesForRepainting.addAll(colPieceArr);
+					addPiecesForRepainting(curPiece);
+				}
+			}
 		}
-		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
-				Settings.GRID_HEI * Settings.RECT_WID);
 	}
 
 	public void clearPath() {
 		for (List<Piece> colPieceArr : gridPieces) {
-			for (Piece curPiece : colPieceArr)
-				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath)
+			for (Piece curPiece : colPieceArr) {
+				if (curPiece.getType() == Piece.Type.Checked || curPiece.getType() == Piece.Type.DisplayingPath) {
 					curPiece.setType(Piece.Type.Empty);
-			piecesForRepainting.addAll(colPieceArr);
+					addPiecesForRepainting(curPiece);
+				}
+			}
 		}
-		paintImmediately(0, 0, Settings.GRID_WID * Settings.RECT_WID,
-				Settings.GRID_HEI * Settings.RECT_WID);
 	}
 
 	private void setStartPositions() {
@@ -216,7 +200,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 			}
 			gridPieces.add(tempArr);
 		}
-		new GridListeners(gridPieces, this);
+		new GridListeners();
 	}
 
 	public int getRectWid() {
@@ -228,26 +212,22 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	}
 
 	class GridListeners implements MouseListener, MouseMotionListener {
-		private List<List<Piece>> grid;
-		private DrawGrid gridObj;
 		private Piece lastPressed;
 
 		private boolean mouseHeld; // for knowing if the mouse is being held down
 		private boolean movedFromUniquePiece; // its hard to press once without holding so had to add special case for it
 															// (for startPiece and endPiece)
 
-		GridListeners(List<List<Piece>> grid, DrawGrid gridObj) {
-			this.grid = grid;
-			this.gridObj = gridObj;
-			gridObj.addMouseListener(this);
-			gridObj.addMouseMotionListener(this);
+		GridListeners() {
+			addMouseListener(this);
+			addMouseMotionListener(this);
 		}
 
 		private Piece PressedPiece(int xPos, int yPos) {
 			Rectangle2D rect;
 			Piece piece = null;
 
-			for (List<Piece> pieces : grid) {
+			for (List<Piece> pieces : gridPieces) {
 				for (Piece value : pieces) {
 					rect = value.getRect();
 					if (rect.contains(xPos, yPos)) {
@@ -291,9 +271,8 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				wasPreviousPieceUnique = pressed;
 				return;
 			}
-			gridObj.piecesForRepainting.add(pressed);
-			gridObj.repaint(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID, Settings.RECT_WID,
-					Settings.RECT_WID);
+
+			addPiecesForRepainting(pressed);
 			lastPressed = pressed;
 		}
 
@@ -309,15 +288,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				pressed.setType(wasPreviousPieceUnique.getType());
 				wasPreviousPieceUnique.setType(Piece.Type.Empty);
 
-				piecesForRepainting.add(pressed);
-				piecesForRepainting.add(wasPreviousPieceUnique);
-
-				gridObj.paintImmediately(wasPreviousPieceUnique.getX() * Settings.RECT_WID,
-						wasPreviousPieceUnique.getY() * Settings.RECT_WID, Settings.RECT_WID,
-						Settings.RECT_WID);
-				gridObj.paintImmediately(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID,
-						Settings.RECT_WID,
-						Settings.RECT_WID);
+				addPiecesForRepainting(pressed, wasPreviousPieceUnique);
 
 				if (pressed.getType() == Piece.Type.Start)
 					startPiece = pressed;
@@ -335,15 +306,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 				pressed.setType(wasPreviousPieceUnique.getType());
 				wasPreviousPieceUnique.setType(Piece.Type.Empty);
 
-				piecesForRepainting.add(pressed);
-				piecesForRepainting.add(wasPreviousPieceUnique);
-
-				gridObj.paintImmediately(wasPreviousPieceUnique.getX() * Settings.RECT_WID,
-						wasPreviousPieceUnique.getY() * Settings.RECT_WID, Settings.RECT_WID,
-						Settings.RECT_WID);
-				gridObj.paintImmediately(pressed.getX() * Settings.RECT_WID, pressed.getY() * Settings.RECT_WID,
-						Settings.RECT_WID,
-						Settings.RECT_WID);
+				addPiecesForRepainting(pressed, wasPreviousPieceUnique);
 
 				if (pressed.getType() == Piece.Type.Start)
 					startPiece = pressed;

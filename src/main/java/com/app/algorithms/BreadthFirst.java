@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
+import com.app.ui.IDrawGrid;
 
 public class BreadthFirst implements ISearchAlgorithm {
 	/**
@@ -32,7 +32,7 @@ public class BreadthFirst implements ISearchAlgorithm {
 		return SearchAlgorithm.BreadthFirst;
 	}
 
-	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, IDrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		Queue<QueuePiece> queue = new LinkedList<>();
 		var start = new QueuePiece(startPiece.getX(), startPiece.getY());
@@ -62,7 +62,8 @@ public class BreadthFirst implements ISearchAlgorithm {
 					gridObj.addPiecesForRepainting(checkedPiece);
 
 					// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-					// 		checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+					// checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+					// gridObj.getRectHei());
 					try {
 						// noinspection BusyWait
 						Thread.sleep(Settings.VISUALIZE_SPEED);
@@ -70,7 +71,7 @@ public class BreadthFirst implements ISearchAlgorithm {
 						throw new RuntimeException(e);
 					}
 				} else if (checkedPiece.getType() == Piece.Type.End) {
-					var path = dequeuedPiece.getPath().stream().map(o -> (Piece)o).toList(); // this is fucking stupid
+					var path = dequeuedPiece.getPath().stream().map(o -> (Piece) o).toList(); // this is fucking stupid
 					gridObj.drawShortestPath(path);
 					return;
 				}

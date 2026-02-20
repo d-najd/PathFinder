@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
+import com.app.ui.IDrawGrid;
 
 public class Bidirectional implements ISearchAlgorithm {
 	@Override
@@ -18,7 +18,7 @@ public class Bidirectional implements ISearchAlgorithm {
 		return SearchAlgorithm.Bidirectional;
 	}
 
-	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, IDrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		Queue<QueuePiece> queue = new LinkedList<>();
 		QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY(), Piece.Type.Start);
@@ -49,9 +49,11 @@ public class Bidirectional implements ISearchAlgorithm {
 					checkedQueuePiece.setStartType(dequeuedPiece.getStartType());
 					queue.add(checkedQueuePiece);
 
-					gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-							checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-							gridObj.getRectHei());
+					gridObj.addPiecesForRepainting(checkedQueuePiece);
+
+					// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
+					// checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+					// gridObj.getRectHei());
 					try {
 						// noinspection BusyWait
 						Thread.sleep(Settings.VISUALIZE_SPEED);

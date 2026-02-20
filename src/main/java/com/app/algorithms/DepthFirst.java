@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import com.app.Settings;
 import com.app.data.Piece;
 import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
+import com.app.ui.IDrawGrid;
 
 public class DepthFirst implements ISearchAlgorithm {
 	@Override
@@ -17,7 +17,7 @@ public class DepthFirst implements ISearchAlgorithm {
 	}
 
 	@Override
-	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, IDrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		Stack<QueuePiece> stack = new Stack<>();
 		QueuePiece start = new QueuePiece(startPiece.getX(), startPiece.getY());
@@ -35,8 +35,10 @@ public class DepthFirst implements ISearchAlgorithm {
 
 			if (dequeuedPiece.getType() != Piece.Type.Start) {
 				dequeuedPiece.setType(Piece.Type.Checked);
-				gridObj.paintImmediately(dequeuedQueuePiece.getX() * gridObj.getRectWid(),
-						dequeuedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+				gridObj.addPiecesForRepainting(dequeuedPiece);
+				// gridObj.paintImmediately(dequeuedQueuePiece.getX() * gridObj.getRectWid(),
+				// dequeuedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+				// gridObj.getRectHei());
 
 				try {
 					// noinspection BusyWait

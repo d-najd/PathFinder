@@ -1,13 +1,16 @@
 package com.app.algorithms;
 
-import com.app.data.Piece;
-import com.app.data.QueuePiece;
-import com.app.ui.DrawGrid;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.function.Supplier;
 
 import com.app.Settings;
+import com.app.data.Piece;
+import com.app.data.QueuePiece;
+import com.app.ui.IDrawGrid;
 
 public class Greedy implements ISearchAlgorithm {
 	/**
@@ -34,7 +37,7 @@ public class Greedy implements ISearchAlgorithm {
 		return SearchAlgorithm.Greedy;
 	}
 
-	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, DrawGrid gridObj,
+	public void start(Piece startPiece, Piece endPiece, List<List<Piece>> grid, IDrawGrid gridObj,
 			Supplier<SearchAlgorithm> currentAlgorithm) {
 		endX = endPiece.getX();
 		endY = endPiece.getY();
@@ -75,9 +78,11 @@ public class Greedy implements ISearchAlgorithm {
 			var checkedPiece = grid.get(checkedQueuePiece.getX()).get(checkedQueuePiece.getY());
 			checkedPiece.setType(Piece.Type.Checked);
 
-			gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-					checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
-					gridObj.getRectHei());
+			gridObj.addPiecesForRepainting(checkedQueuePiece);
+
+			// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
+			// checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(),
+			// gridObj.getRectHei());
 
 			try {
 				// noinspection BusyWait
