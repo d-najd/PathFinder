@@ -47,6 +47,10 @@ public class Piece {
 		return getColor(this.type);
 	}
 
+	public Color getPreviousColor() {
+		return getColor(this.previousType);
+	}
+
 	public int getX() {
 		return x;
 	}

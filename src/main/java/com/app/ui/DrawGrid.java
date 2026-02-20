@@ -7,9 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.ToLongBiFunction;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -42,8 +44,8 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		createGridPieces();
 		setStartPositions();
 
-		redrawSkipAnimations = true;
-		piecesForRepainting.addAll(gridPieces.stream().flatMap(List::stream).toList());
+		// redrawSkipAnimations = true;
+		redrawAllImmediate();
 
 		timer = new Timer(16, e -> {
 			this.repaint();
@@ -61,7 +63,7 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	@Override
 	public void redrawAllImmediate() {
 		this.piecesForRepainting.clear();
-		this.piecesForRepainting.addAll(piecesForRepainting);
+		this.piecesForRepainting.addAll(gridPieces.stream().flatMap(List::stream).toList());
 		redrawSkipAnimations = true;
 	}
 
@@ -72,9 +74,17 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		var piecesCopy = gridPieces.stream().flatMap(List::stream).toList();
+		var piecesCopy = piecesForRepainting.stream().toList();
 		var curTime = System.currentTimeMillis();
 
+		// var otherPieces = gridPieces.stream().flatMap(List::stream).toList();
+		// for (Piece curpiece : otherPieces) {
+		// repaintPiece(g2d, curpiece, true);
+		// }
+
+		// var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o ->
+		// !piecesForRepainting.contains(o))
+		// .toList();
 		if (redrawSkipAnimations) {
 			for (Piece curPiece : piecesCopy) {
 				piecesForRepainting.clear();
@@ -85,40 +95,48 @@ public class DrawGrid extends JPanel implements IDrawGrid {
 		} else {
 			for (Piece curPiece : piecesCopy) {
 				var elapsedTime = timeSinceLastRepaint - curTime;
-				var newPercentage = curPiece.getAnimationPercentage() + (elapsedTime / curPiece.getAnimationLengthMilli());
+				var newPercentage = curPiece.getAnimationPercentage()
+						- ((float) elapsedTime / curPiece.getAnimationLengthMilli());
 
 				if (curPiece.isImmediatelySetType()) {
+					System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y PAINT IMMEDIATE");
 					// If piece gets modified to something while it's painting, will immediatelly
 					// finish current anim and start with the new type
 					piecesForRepainting.remove(curPiece);
 					curPiece.setAnimationPercentage(0);
 					curPiece.setImmediatelySetType(false);
 					repaintPiece(g2d, curPiece);
-				}
-				if (newPercentage >= 1.00) {
+				} else if (newPercentage > 1.00) {
+					System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y FINISHED");
 					piecesForRepainting.remove(curPiece);
 					repaintPiece(g2d, curPiece);
 					curPiece.notifyAnimationFinished();
 				} else {
+					System.out.println(curPiece.getX() + "X " + curPiece.getY() + "Y " + newPercentage);
 					curPiece.setAnimationPercentage(newPercentage);
 					var animationRect = AnimatorNew.ripple(curPiece);
 					g2d.setColor(curPiece.getColor());
 					g2d.fill(animationRect);
 				}
 			}
+			System.out.print(curTime);
 		}
 
-		for (Piece curPiece : piecesCopy) {
-			piecesForRepainting.clear();
-			repaintPiece(g2d, curPiece);
-			curPiece.notifyAnimationFinished();
+		var otherPieces = gridPieces.stream().flatMap(List::stream).filter(o -> !piecesForRepainting.contains(o))
+				.toList();
+		for (Piece curpiece : otherPieces) {
+			repaintPiece(g2d, curpiece, false);
 		}
 
 		timeSinceLastRepaint = curTime;
 	}
 
 	private void repaintPiece(Graphics2D g2d, Piece curPiece) {
-		g2d.setColor(curPiece.getColor());
+		repaintPiece(g2d, curPiece, false);
+	}
+
+	private void repaintPiece(Graphics2D g2d, Piece curPiece, boolean usePreviousColor) {
+		g2d.setColor(!usePreviousColor ? curPiece.getColor() : curPiece.getPreviousColor());
 		g2d.fill(curPiece.getRect());
 		g2d.setColor(Color.black);
 		g2d.draw(curPiece.getRect());

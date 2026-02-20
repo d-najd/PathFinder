@@ -59,8 +59,10 @@ public class BreadthFirst implements ISearchAlgorithm {
 					checkedQueuePiece.addParent(dequeuedPiece, checkedQueuePiece);
 					queue.add(checkedQueuePiece);
 
-					gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
-							checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
+					gridObj.addPiecesForRepainting(checkedPiece);
+
+					// gridObj.paintImmediately(checkedQueuePiece.getX() * gridObj.getRectWid(),
+					// 		checkedQueuePiece.getY() * gridObj.getRectHei(), gridObj.getRectWid(), gridObj.getRectHei());
 					try {
 						// noinspection BusyWait
 						Thread.sleep(Settings.VISUALIZE_SPEED);
