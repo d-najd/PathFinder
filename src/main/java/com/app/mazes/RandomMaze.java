@@ -3,10 +3,11 @@ package com.app.mazes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.app.Settings;
 import com.app.data.Piece;
-import com.app.ui.DrawGrid;
+import com.app.ui.IDrawGrid;
 
 public class RandomMaze implements IMaze {
 	@Override
@@ -15,7 +16,7 @@ public class RandomMaze implements IMaze {
 	}
 
 	@Override
-	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
+	public void generateMaze(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
 		// Doing it this way is more pretty
 		var piecesGenerated = new ArrayList<Piece>();
 
@@ -34,7 +35,10 @@ public class RandomMaze implements IMaze {
 
 		Collections.shuffle(piecesGenerated);
 		for (var curPiece : piecesGenerated) {
-			// piecesGenerated.add(curPiece);
+			if (currentMaze.get() != currentMaze()) {
+				return;
+			}
+
 			curPiece.setType(Piece.Type.Wall);
 			gridObj.addPiecesForRepainting(curPiece);
 			try {

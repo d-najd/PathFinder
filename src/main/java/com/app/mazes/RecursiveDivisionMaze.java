@@ -2,10 +2,11 @@ package com.app.mazes;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.app.Settings;
 import com.app.data.Piece;
-import com.app.ui.DrawGrid;
+import com.app.ui.IDrawGrid;
 
 public class RecursiveDivisionMaze implements IMaze {
 	@Override
@@ -14,12 +15,12 @@ public class RecursiveDivisionMaze implements IMaze {
 	}
 
 	@Override
-	public void generateMaze(List<List<Piece>> grid, DrawGrid gridObj) {
-		divide(grid, gridObj);
-		MazeUtils.repaintAll(grid, gridObj);
+	public void generateMaze(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
+		divide(grid, gridObj, currentMaze);
+		// MazeUtils.repaintAll(grid, gridObj);
 	}
 
-	private static void divide(List<List<Piece>> grid, DrawGrid gridObj) {
+	private void divide(List<List<Piece>> grid, IDrawGrid gridObj, Supplier<Maze> currentMaze) {
 		if (grid.size() == 0) {
 			return;
 		}
@@ -39,6 +40,10 @@ public class RecursiveDivisionMaze implements IMaze {
 		var pathPieceIndex = new Random().nextInt(remainingSizeOpposite);
 
 		for (int i = 0; i < remainingSizeOpposite; i++) {
+			if (currentMaze.get() != currentMaze()) {
+				return;
+			}
+
 			if (i == pathPieceIndex) {
 				continue;
 			}
@@ -62,14 +67,14 @@ public class RecursiveDivisionMaze implements IMaze {
 		}
 
 		if (splitType == SplitType.Horizontal) {
-			divide(grid.stream().map(o -> o.subList(0, splitIndex)).toList(), gridObj);
+			divide(grid.stream().map(o -> o.subList(0, splitIndex)).toList(), gridObj, currentMaze);
 			divide(grid.stream().map(o -> o.subList(splitIndex + 2, Math.max(splitIndex +
 					2, remainingHeight))).toList(),
-					gridObj);
+					gridObj, currentMaze);
 		} else {
-			divide(grid.subList(0, splitIndex), gridObj);
+			divide(grid.subList(0, splitIndex), gridObj, currentMaze);
 			divide(grid.subList(splitIndex + 2, Math.max(splitIndex + 2,
-					remainingWidth)), gridObj);
+					remainingWidth)), gridObj, currentMaze);
 		}
 	}
 

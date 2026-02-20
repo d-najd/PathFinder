@@ -16,9 +16,21 @@ import java.util.concurrent.Executors;
 
 public class ContentButtons extends JPanel {
 	private static SearchAlgorithm runningAlgorithm = null;
+	private static Maze runningMaze = null;
+
+	public static Maze getRunningMaze() {
+		return runningMaze;
+	}
 
 	public static SearchAlgorithm getRunningAlgorithm() {
 		return runningAlgorithm;
+	}
+
+	public static boolean isSomethingRunning() {
+		if (getRunningAlgorithm() != null || getRunningMaze() != null) {
+			return true;
+		}
+		return false;
 	}
 
 	private static final int centerX = Settings.WINDOW_WID / 2 - Settings.CENTER_OFFSET;
@@ -49,7 +61,7 @@ public class ContentButtons extends JPanel {
 				Settings.BUTTON_WID,
 				Settings.BUTTON_HEI);
 		button.addActionListener(o -> {
-			if (runningAlgorithm != null) {
+			if (isSomethingRunning()) {
 				return;
 			}
 			mazesMenu.swapState();
@@ -62,7 +74,7 @@ public class ContentButtons extends JPanel {
 		button.setBounds((int) (centerX - Settings.BUTTON_WID * 1.5) - Settings.BUTTON_MARGIN, 15, Settings.BUTTON_WID,
 				Settings.BUTTON_HEI);
 		button.addActionListener(o -> {
-			if (runningAlgorithm != null) {
+			if (isSomethingRunning()) {
 				return;
 			}
 			algorithmsMenu.swapState();
@@ -74,7 +86,7 @@ public class ContentButtons extends JPanel {
 		button = new JButton("Visualize");
 		button.setBounds(centerX - (Settings.BUTTON_WID / 2), 15, Settings.BUTTON_WID, Settings.BUTTON_HEI);
 		button.addActionListener(m -> {
-			if (getRunningAlgorithm() != null) {
+			if (isSomethingRunning()) {
 				return;
 			}
 
@@ -97,6 +109,7 @@ public class ContentButtons extends JPanel {
 				Settings.BUTTON_HEI);
 		button.addActionListener(o -> {
 			runningAlgorithm = null;
+			runningMaze = null;
 			drawGrid.clearBoard();
 		});
 		add(button);
@@ -137,10 +150,13 @@ public class ContentButtons extends JPanel {
 			throw new IllegalStateException();
 		}
 
+		runningMaze = mazeType;
+
 		executor.submit(() -> {
 			try {
 				drawGrid.clearBoard();
-				matching.get().generateMaze(drawGrid.gridPieces, drawGrid);
+				matching.get().generateMaze(drawGrid.gridPieces, drawGrid, ContentButtons::getRunningMaze);
+				runningMaze = null;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
