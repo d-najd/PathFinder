@@ -1,6 +1,6 @@
 # PathFinder
 
-A pathfinding visualization tool that finds and displays the optimal route from point A to point point B
+A pathfinding visualization tool that finds and displays the optimal route from point A to point B
 
 ## Features
 
