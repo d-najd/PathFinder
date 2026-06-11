@@ -54,7 +54,13 @@ A pathfinding visualization tool that finds and displays the optimal route from 
 * Java
 * Swing
 
-## Project Setup
+## Running Locally
+
+### Requirements
+
+Java 25 or higher
+
+### Using Gradle
 
 ```bash
 ./gradlew run
